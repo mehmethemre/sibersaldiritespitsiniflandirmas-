@@ -54,3 +54,4 @@ N5 sade arayüz · N6 Python 3.10+, Windows/Linux.
 - Değişiklikten sonra `python -m pytest -q` çalıştır; yeni modüle test ekle.
 - Büyük veriyle uzun çalıştırmalardan önce `--sample-frac` ile dene.
 - Commit/push yalnızca kullanıcı isteyince.
+- Commit mesajlarına ve PR açıklamalarına "Co-Authored-By: Claude" veya benzeri imza satırı ekleme.
