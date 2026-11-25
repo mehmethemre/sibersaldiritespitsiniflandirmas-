@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Veri seti GitHub'a yüklenmez (boyutu çok büyük)
+data/raw/*.csv
+data/synthetic/
+
+# Model dosyaları büyük olabilir (Random Forest > 100 MB olabilir)
+artifacts/*.pkl
+
+# --sample-frac ile yapılan hızlı denemeler (sayıları rapora yazılmaz)
+reports/**/deneme_frac*/
+
+# Gizli bilgi / yerel ayarlar
+.env
+.claude/settings.local.json

@@ -1,0 +1,4 @@
+sinif_A,sinif_B,grup_sayisi,satir_tekrar_sonrasi,satir_tekrar_oncesi,satir_A,satir_B
+Benign,DoS/DDoS,163,326,5213,215,4998
+Benign,PortScan,106,212,77233,968,76265
+Benign,Botnet,40,80,258,56,202
