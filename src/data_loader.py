@@ -3,10 +3,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from .config import DROP_COLUMNS, RANDOM_STATE
+from .config import DROP_COLUMNS, DUPLICATE_COLUMNS, PORT_COLUMN, RANDOM_STATE
 
 
-def load_raw(data_dir, sample_frac=None, log=print) -> pd.DataFrame:
+def load_raw(data_dir, sample_frac=None, log=print, keep_port=False) -> pd.DataFrame:
+    """keep_port=True: `Destination Port` silinmez (8. hafta port deneyi için)."""
+    drop_cols = [c for c in DROP_COLUMNS if not (keep_port and c == PORT_COLUMN)]
+    drop_cols += DUPLICATE_COLUMNS   # birebir kopya sütun (Fwd Header Length.1)
     files = sorted(Path(data_dir).glob("*.csv"))
     if not files:
         raise FileNotFoundError(
@@ -24,7 +27,7 @@ def load_raw(data_dir, sample_frac=None, log=print) -> pd.DataFrame:
         if sample_frac:
             df = df.sample(frac=sample_frac, random_state=RANDOM_STATE)
 
-        df = df.drop(columns=[c for c in DROP_COLUMNS if c in df.columns])
+        df = df.drop(columns=[c for c in drop_cols if c in df.columns])
         feat_cols = [c for c in df.columns if c != "Label"]
         # Sayısal olmayan bozuk hücreler NaN olur; bellek için float32
         df[feat_cols] = df[feat_cols].apply(pd.to_numeric, errors="coerce").astype("float32")

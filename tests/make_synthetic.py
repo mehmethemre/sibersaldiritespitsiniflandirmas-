@@ -29,6 +29,8 @@ def make(out_dir, n_files=2, seed=0):
         X = rng.normal(shift, 1.0, (n, len(BASE)))
         X[:, 1:] += rng.normal(0, 1.0, (n, len(BASE) - 1)) * (np.arange(1, len(BASE)) % 3)
         df = pd.DataFrame(X, columns=BASE)
+        # gerçekçi hedef portlar (port deneyindeki kategoriler boş kalmasın)
+        df["Destination Port"] = rng.choice([22, 80, 443, 8080, 3306, 50000, 60000], n)
         df["Fwd IAT Total"] = df["Flow Duration"] * 0.98 + rng.normal(0, 0.01, n)  # yüksek korelasyon
         df["Bwd PSH Flags"] = 0.0                                                    # sabit sütun
         df["Label"] = lab

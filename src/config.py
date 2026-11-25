@@ -8,6 +8,7 @@ REPORTS_DIR = ROOT / "reports"
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
+VAL_SIZE = 0.20                # 8. hafta: eğitim kümesinin bu oranı doğrulama kümesi olur
 
 # Öznitelik seçimi
 CORR_THRESHOLD = 0.95          # bu değerin üzerindeki korelasyonlu çiftlerden biri elenir
@@ -23,6 +24,12 @@ DROP_COLUMNS = [
     "Destination Port", "Flow ID", "Source IP", "Destination IP",
     "Source Port", "Timestamp",
 ]
+
+PORT_COLUMN = "Destination Port"
+
+# CSV'lerde "Fwd Header Length" iki kez bulunur; pandas ikincisini ".1" ekiyle okur.
+# İki sütun birebir aynı olduğu için kopya yüklemede silinir.
+DUPLICATE_COLUMNS = ["Fwd Header Length.1"]
 
 DT_PARAMS = dict(criterion="gini", max_depth=15, min_samples_split=10,
                  random_state=RANDOM_STATE)

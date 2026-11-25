@@ -7,11 +7,15 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
 from .config import (CORR_THRESHOLD, FS_SAMPLE_SIZE, IMPORTANCE_CUMSUM,
-                     RANDOM_STATE, SMOTE_K, SMOTE_TARGET, TEST_SIZE, map_label)
+                     RANDOM_STATE, SMOTE_K, SMOTE_TARGET, TEST_SIZE, VAL_SIZE,
+                     map_label)
 
 
 # ---------------------------------------------------------------- 1) temizlik
-def clean(df: pd.DataFrame, log=print):
+def clean(df: pd.DataFrame, log=print, count_col=None):
+    """count_col verilirse, tekrar silmeden önce her satırın ham veride kaç kopyası olduğu
+    bu adla bir sütuna yazılır (8. hafta etiket çakışması deneyinde çoğunluk oyu için).
+    Bu sütun öznitelik DEĞİLDİR; bölmeden sonra X'ten çıkarılmalıdır."""
     stats = {"ham_satir": int(len(df))}
 
     df = df.copy()
@@ -27,11 +31,18 @@ def clean(df: pd.DataFrame, log=print):
     stats["inf_nan_sonrasi"] = int(len(df))
 
     n = len(df)
-    df = df.drop_duplicates()
+    if count_col:
+        # Her satırın 64 bitlik özeti; aynı özete sahip satır sayısı = kopya sayısı
+        h = pd.util.hash_pandas_object(df, index=False)
+        mult = h.map(h.value_counts()).to_numpy()
+        keep = ~df.duplicated().to_numpy()
+        df = df[keep].assign(**{count_col: mult[keep].astype(np.int64)})
+    else:
+        df = df.drop_duplicates()
     stats["tekrar_silinen"] = int(n - len(df))
     stats["tekrar_sonrasi"] = int(len(df))
 
-    feats = [c for c in df.columns if c != "Class"]
+    feats = [c for c in df.columns if c not in ("Class", count_col)]
     const = [c for c in feats if df[c].nunique() <= 1]
     df = df.drop(columns=const)
     stats["sabit_sutunlar"] = const
@@ -50,6 +61,69 @@ def split(df: pd.DataFrame):
     y = df["Class"]
     return train_test_split(X, y, test_size=TEST_SIZE, stratify=y,
                             random_state=RANDOM_STATE)
+
+
+def split_train_val(X, y, val_size=VAL_SIZE):
+    """Eğitim kümesini katmanlı olarak alt-eğitim / doğrulama diye böler (8. hafta).
+
+    Model ve ayar karşılaştırmaları doğrulama kümesinde yapılır; test kümesi en sona saklanır.
+    Dönüş sırası train_test_split ile aynı: X_alt, X_dog, y_alt, y_dog.
+    """
+    return train_test_split(X, y, test_size=val_size, stratify=y, random_state=RANDOM_STATE)
+
+
+def port_category(port) -> np.ndarray:
+    """Hedef portu IANA aralıklarına göre kategoriye çevirir.
+
+    0: iyi bilinen (0-1023) · 1: kayıtlı (1024-49151) · 2: dinamik/özel (49152+)
+    """
+    p = np.asarray(port, dtype=np.float64)
+    return np.select([p <= 1023, p <= 49151], [0, 1], default=2).astype(np.float32)
+
+
+# ---------------------------------------------------------------- etiket çakışmaları
+def resolve_label_conflicts(X: pd.DataFrame, y, counts=None, mode="birak"):
+    """Öznitelikleri birebir aynı olup farklı etiket taşıyan satır gruplarını işler.
+
+    YALNIZCA eğitim tarafına uygulanır; doğrulama/test kümesine dokunulmaz.
+    mode:
+      "birak"    : değişiklik yok
+      "sil"      : çakışan grupların bütün satırları silinir
+      "cogunluk" : her grupta, ham veride en çok kopyası olan etiket tutulur, diğerleri silinir.
+                   (Tekrar silmeden sonra her grupta etiket başına 1 satır kaldığı için satır
+                   sayısı oy vermez; oy için `counts` = ham kopya sayısı kullanılır.)
+                   En çok oyu iki etiket paylaşırsa grup karar verilemediği için silinir.
+    Dönüş: X, y (filtrelenmiş) ve özet sözlüğü.
+    """
+    y_arr = np.asarray(y)
+    n_arr = np.ones(len(X), dtype=np.int64) if counts is None else np.asarray(counts)
+    key = pd.util.hash_pandas_object(X, index=False).to_numpy()   # satır özeti
+    d = pd.DataFrame({"k": key, "y": y_arr, "n": n_arr})
+    conflict = (d.groupby("k")["y"].transform("nunique") > 1).to_numpy()
+    info = {"mod": mode, "cakisan_grup": int(d.loc[conflict, "k"].nunique()),
+            "cakisan_satir": int(conflict.sum()), "esit_oylu_grup": 0}
+
+    if mode == "birak":
+        keep = np.ones(len(X), dtype=bool)
+    elif mode == "sil":
+        keep = ~conflict
+    elif mode == "cogunluk":
+        c = d[conflict]
+        votes = c.groupby(["k", "y"])["n"].sum()                     # grup x etiket oyları
+        is_max = votes == votes.groupby(level=0).transform("max")
+        n_max = is_max.groupby(level=0).transform("sum")
+        winners = votes.index[is_max & (n_max == 1)]                 # tek kazananı olanlar
+        info["esit_oylu_grup"] = int(n_max[is_max & (n_max > 1)].index
+                                     .get_level_values(0).nunique())
+        won = pd.MultiIndex.from_frame(c[["k", "y"]]).isin(winners)
+        keep = ~conflict
+        keep[np.flatnonzero(conflict)[won]] = True
+    else:
+        raise ValueError(f"Bilinmeyen mod: {mode}")
+
+    info["silinen_satir"] = int((~keep).sum())
+    y_out = y[keep] if hasattr(y, "iloc") else y_arr[keep]
+    return X[keep], y_out, info
 
 
 def _stratified_sample(X, y, size):
@@ -122,10 +196,31 @@ def _simple_smote(X, y, strategy, k, random_state):
     return np.vstack(Xs), np.concatenate(ys)
 
 
-def oversample(X, y, log=print):
+class SmoteTarget:
+    """imblearn SMOTE için `sampling_strategy` olarak kullanılan çağrılabilir nesne.
+
+    Her çağrıda (ör. çapraz doğrulamanın her katında) o anki y'ye bakar: en büyük sınıf
+    hariç, `target` altındaki sınıfları `target`'a tamamlar. Sabit sözlük yerine bunun
+    kullanılmasının nedeni, katlardaki sınıf sayılarının değişmesi ve hedefin altında
+    kalmayan sınıf için imblearn'ün hata vermesidir. Windows'ta paralel işlerde
+    taşınabilmesi (pickle) için modül düzeyinde sınıf olarak tanımlıdır.
+    """
+
+    def __init__(self, target):
+        self.target = int(target)
+
+    def __call__(self, y):
+        counts = pd.Series(y).value_counts()
+        majority = counts.idxmax()
+        target = min(self.target, int(counts.max()))
+        return {c: target for c, n in counts.items() if n < target and c != majority}
+
+
+def oversample(X, y, log=print, target=SMOTE_TARGET):
+    """target: küçük sınıfların tamamlanacağı satır sayısı (varsayılan config.SMOTE_TARGET)."""
     counts = pd.Series(y).value_counts()
     majority = counts.idxmax()   # en büyük sınıf (Benign) asla çoğaltılmaz
-    target = min(SMOTE_TARGET, int(counts.max()))
+    target = min(int(target), int(counts.max()))
     strategy = {int(c): target for c, n in counts.items() if n < target and c != majority}
     if not strategy:
         log("SMOTE: hedefin altında sınıf yok, atlandı")

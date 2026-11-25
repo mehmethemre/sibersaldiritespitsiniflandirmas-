@@ -1,0 +1,45 @@
+{
+  "izgara": {
+    "n_estimators": [
+      100,
+      200,
+      300
+    ],
+    "max_depth": [
+      10,
+      20,
+      30,
+      null
+    ],
+    "min_samples_split": [
+      2,
+      5,
+      10
+    ],
+    "min_samples_leaf": [
+      1,
+      2,
+      4
+    ],
+    "max_features": [
+      "sqrt",
+      "log2",
+      0.5
+    ]
+  },
+  "deneme_sayisi": 20,
+  "kat_sayisi": 3,
+  "skor": "f1_macro",
+  "orneklem_satir": 300000,
+  "kat_smote_hedefi": 1421,
+  "class_weight": null,
+  "en_iyi_parametreler": {
+    "n_estimators": 300,
+    "min_samples_split": 10,
+    "min_samples_leaf": 2,
+    "max_features": "sqrt",
+    "max_depth": 30
+  },
+  "en_iyi_cv_macro_f1": 0.9284827832907454,
+  "arama_suresi_s": 860.4885893999999
+}
