@@ -115,3 +115,60 @@ Seçilen yapılandırma: **Random Forest (7. hafta parametreleri)**, dengesizlik
 | Botnet | %73,20 |
 
 Hata matrisi: `hata_matrisi_final.png`.
+
+<!-- EK DENEYLER -->
+
+# Ek Deneyler (öznitelik seçimi kontrolü, Botnet karar eşiği, yeni final)
+
+Çalıştırma zamanı: 2026-11-25 21:56 · Örneklem oranı: tam veri · Süre: 9,3 dk
+
+Ortak ayarlar: port yok, 7. hafta RF parametreleri, çakışma modu "sil", aynı alt-eğitim / doğrulama / test bölmesi. Tüm seçimler doğrulama kümesinde yapıldı.
+
+## Ek 1 — Öznitelik Seçimi Kontrolü (SMOTE 10.000, doğrulama kümesi)
+
+| Öznitelik kümesi | Sayı | Accuracy | Macro F1 | F1 Benign | F1 DoS/DDoS | F1 PortScan | F1 Brute Force | F1 Web Attack | F1 Botnet | Eğitim (sn) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| a) Sabit 26 öznitelik (seçim var) | 26 | %99,85 | %93,21 | %99,91 | %99,73 | %95,21 | %98,58 | %93,50 | %72,32 | 98,4 |
+| b) Seçim yok, korelasyon sonrası 45 öznitelik | 45 | %99,86 | %93,85 | %99,92 | %99,73 | %94,88 | %98,69 | %95,28 | %74,58 | 106,5 |
+
+Kazanan (doğrulama Macro F1): **b) Seçim yok, korelasyon sonrası 45 öznitelik**. (b) kümesinde olup (a)'da olmayan 19 öznitelik: Bwd Packet Length Min, Total Length of Bwd Packets, Init_Win_bytes_backward, Flow IAT Min, Bwd Header Length, Bwd IAT Mean, Bwd Packets/s, Bwd IAT Std, Fwd Packet Length Min, Flow Packets/s, Flow Bytes/s, Bwd IAT Min, Idle Std, Active Mean, Active Max, Active Min, Active Std, ECE Flag Count, Fwd URG Flags.
+
+## Ek 2 — Botnet Karar Eşiği (doğrulama kümesi)
+
+Kural: Botnet olasılığı ≥ eşik ise Botnet, değilse kalan sınıflardan en olası olan. "Varsayılan" = eşik yok (en olası sınıf). Eşik 0,05–0,95 aralığında 0,01 adımla tarandı; Botnet F1'i en yüksek eşik seçildi (eşit olanlardan ortadaki).
+
+| Aday | Eşik | Macro F1 | Botnet F1 | Botnet Precision | Botnet Recall | Benign→Botnet | PortScan F1 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| SMOTE 10.000 + varsayılan karar | varsayılan | %93,85 | %74,58 | %65,05 | %87,39 | 108 | %94,88 |
+| SMOTE 10.000 + eşik 0.30 | 0,30 | %94,11 | %76,17 | %63,48 | %95,22 | 126 | %94,88 |
+| SMOTE yok + varsayılan karar | varsayılan | %92,55 | %69,06 | %94,70 | %54,35 | 7 | %94,69 |
+| SMOTE yok + eşik 0.08 | 0,08 | %93,86 | %76,90 | %63,71 | %96,96 | 127 | %94,69 |
+
+Seçilen aday (doğrulama Macro F1): **SMOTE 10.000 + eşik 0.30**.
+
+> **Not:** Ayarlı eşik, seçimin yapıldığı doğrulama kümesinde bulundu; bu adayların doğrulama skoru bu yüzden hafif iyimserdir. Tarafsız ölçüm aşağıdaki test sonucudur. Eşik eğrileri: `ek2_esik_tarama.csv`.
+
+## Yeni Final — Test Kümesi (tek değerlendirme)
+
+Yapılandırma: b) Seçim yok, korelasyon sonrası 45 öznitelik, SMOTE 10.000, eşik: 0,30. Tüm eğitim kümesinde yeniden eğitildi; eşik doğrulamadaki değerinde sabit tutuldu.
+
+| Metrik | 7. Hafta | 8. Hafta (önceki final) | 8. Hafta (yeni final) | Fark (yeni − önceki) |
+| --- | --- | --- | --- | --- |
+| Accuracy | %99,85 | %99,86 | %99,86 | 0,00 puan |
+| Macro F1 | %93,04 | %93,65 | %93,94 | 0,29 puan |
+| Botnet F1 | %68,19 | %73,20 | %74,04 | 0,84 puan |
+| Botnet Precision | %53,59 | %62,41 | %62,44 | 0,03 puan |
+| Botnet Recall | %93,73 | %88,50 | %90,94 | 2,44 puan |
+| PortScan F1 | %94,13 | %95,18 | %95,29 | 0,11 puan |
+| Benign→Botnet hatası | 233 | 153 | 157 | +4 |
+
+| Sınıf | F1 (test, yeni final) |
+| --- | --- |
+| Benign | %99,92 |
+| DoS/DDoS | %99,75 |
+| PortScan | %95,29 |
+| Brute Force | %98,59 |
+| Web Attack | %96,03 |
+| Botnet | %74,04 |
+
+Hata matrisi: `hata_matrisi_ek_final.png`.
