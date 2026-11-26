@@ -29,12 +29,14 @@ st.set_page_config(page_title="Siber Saldırı Sınıflandırma", page_icon="�
 
 @st.cache_resource(show_spinner="Model yükleniyor...")
 def load_predictor():
-    return Predictor()
+    # Yollar çağrı anında config'ten okunur (varsayılan argüman içe aktarmada sabitlenirdi);
+    # böylece testler config'i geçici klasörlere çevirip gerçek dosyalara yazmadan çalışır.
+    return Predictor(config.ARTIFACTS_DIR)
 
 
 @st.cache_resource
 def load_logger():
-    return get_security_logger()
+    return get_security_logger(config.LOG_DIR)
 
 
 def pct(x):
