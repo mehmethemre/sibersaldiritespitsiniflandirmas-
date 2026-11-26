@@ -1,0 +1,32 @@
+{
+  "model_surumu": "hafta9-rf-1",
+  "model_dosyasi": "random_forest_model.pkl",
+  "olcekleyici_dosyasi": "scaler.pkl",
+  "siniflar": [
+    "Benign",
+    "DoS/DDoS",
+    "PortScan",
+    "Brute Force",
+    "Web Attack",
+    "Botnet"
+  ],
+  "botnet_esigi": 0.3,
+  "oznitelik_sayisi": 45,
+  "smote_hedefi": 10000,
+  "cakisma_modu": "sil",
+  "extratrees": false,
+  "rf_parametreleri": {
+    "n_estimators": 100,
+    "max_depth": 20,
+    "min_samples_split": 5,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "egitim_zamani": "2026-11-26 17:31",
+  "ornekleme_orani": null,
+  "test_sonucu": {
+    "accuracy": 0.9986607305271583,
+    "macro_f1": 0.9385759578692016,
+    "botnet_f1": 0.7422096317280453
+  }
+}

@@ -27,6 +27,11 @@ def test_label_mapping():
     assert map_label("SSH-Patator") == "Brute Force"
     assert map_label("Web Attack \x96 XSS") == "Web Attack"
     assert map_label("Bot") == "Botnet"
+    # proje sınıf adları da kabul edilir (demo dosyalarındaki Label sütunu)
+    assert map_label("Botnet") == "Botnet"
+    assert map_label("Brute Force") == "Brute Force"
+    assert map_label("Web Attack \x96 Brute Force") == "Web Attack"
+    assert map_label("DoS/DDoS") == "DoS/DDoS"
     assert map_label("Infiltration") is None
     assert map_label("Heartbleed") is None
 

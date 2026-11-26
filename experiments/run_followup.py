@@ -47,7 +47,7 @@ from experiments.run_experiments import (WEEK7, build_variant, metric_row, prepa
 from run_pipeline import setup_logger, tr_int, tr_num, tr_pct  # noqa: E402
 from src import config  # noqa: E402
 from src.data_loader import load_raw  # noqa: E402
-from src.evaluate import plot_confusion  # noqa: E402
+from src.evaluate import plot_confusion, predict_with_threshold  # noqa: E402,F401
 from src.preprocess import oversample, select_features  # noqa: E402
 
 CONFLICT_MODE = "sil"
@@ -59,18 +59,6 @@ MARKER = "<!-- EK DENEYLER -->"
 
 
 # =============================================================== eşik yardımcıları
-def predict_with_threshold(proba, botnet_col, t):
-    """Botnet olasılığı >= t ise Botnet; değilse Botnet dışındaki en olası sütun.
-
-    t=None -> düz argmax (varsayılan karar). Dönen değerler SÜTUN indeksidir.
-    """
-    if t is None:
-        return proba.argmax(axis=1)
-    rest = proba.copy()
-    rest[:, botnet_col] = -np.inf          # Botnet'i dışarıda bırakıp en olası sınıfı bul
-    return np.where(proba[:, botnet_col] >= t, botnet_col, rest.argmax(axis=1))
-
-
 def sweep_threshold(y_true, proba, classes, botnet_label, class_names, grid=THRESHOLDS):
     """Her eşik için doğrulama metriklerini hesaplar; Botnet F1'i en yüksek eşiği döndürür.
 

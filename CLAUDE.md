@@ -17,17 +17,25 @@ Sayı uydurma, tahmini değeri ölçülmüş gibi sunma. Sonuç yoksa "[doldurul
 - Veri: `data\raw\` içinde MachineLearningCSV.zip'ten çıkan 8 CSV (GitHub'a yüklenmez)
 - Çalıştırma: `python run_pipeline.py` (hızlı deneme: `--sample-frac 0.05`), test: `python -m pytest -q`
 - Çıktılar: `reports\rapor_tablolari.md`, `metrics.json`, `run_log.txt`, hata matrisi PNG'leri
+  (haftalık arşiv: `reports\hafta7\`, `hafta8\`, `hafta9\`); uygulama: `streamlit run app.py`
+- Uygulama verisi: `data\analizler.db` (SQLite), `logs\security.log` (ikisi de GitHub'a yüklenmez)
 
 ## Verilmiş tasarım kararları (değiştirmeden önce kullanıcıya sor)
 - Sınıflar (6): Benign, DoS/DDoS, PortScan, Brute Force, Web Attack, Botnet.
   Infiltration ve Heartbleed (47 örnek) kapsam dışı. Eşleme: `src/config.py::map_label`.
-- `Destination Port` çıkarılır (port ezberini önlemek için).
+- `Destination Port` çıkarılır (port ezberini önlemek için; 8. hafta Deney 3 ezberi doğruladı).
+  Birebir kopya `Fwd Header Length.1` yüklemede silinir.
 - Sızıntısız sıra: temizlik (Inf/NaN + **tekrarlayan satır silme**) → katmanlı %80/%20 bölme →
-  öznitelik seçimi (korelasyon > 0,95 + ExtraTrees kümülatif önem %90) **yalnızca eğitimde** →
-  StandardScaler **yalnızca eğitime fit** → SMOTE **yalnızca eğitimde** (küçük sınıflar 100.000'e,
-  en büyük sınıf asla çoğaltılmaz).
+  **yalnızca eğitimde**: etiketi çakışan grupların silinmesi → öznitelik seçimi (yalnızca korelasyon
+  > 0,95 elemesi; ExtraTrees adımı 9. haftada kaldırıldı, kalan 45 öznitelik) → StandardScaler fit →
+  SMOTE (küçük sınıflar **10.000**'e, en büyük sınıf asla çoğaltılmaz).
+  Bu ayarlar 8. haftada doğrulama kümesinde seçildi (`reports/hafta8/`).
 - Modeller: Decision Tree (baseline: gini, max_depth=15, min_samples_split=10),
   Random Forest (n_estimators=100, max_depth=20, min_samples_split=5, n_jobs=-1), random_state=42.
+  Uygulamada Random Forest kullanılır; **Botnet karar eşiği 0,30** (Botnet olasılığı ≥ 0,30 ise
+  Botnet, değilse kalan en olası sınıf). Eşik kuralı tek yerde: `src/evaluate.py::predict_classes`.
+- Alarm seviyeleri: DoS/DDoS, Botnet, Web Attack, Brute Force → CRITICAL; PortScan → WARNING;
+  analiz başına sınıf başına tek log satırı (`src/alarm.py`).
 - Gecikme: tek kayıtlık predict() medyanı (n_jobs=1) ayrı, toplu akış başı ortalama ayrı raporlanır.
 - Metrikler `classification_report` çıktısından alınır; Macro F1 de raporlanır.
 
@@ -36,7 +44,7 @@ Sayı uydurma, tahmini değeri ölçülmüş gibi sunma. Sonuç yoksa "[doldurul
 | --- | --- |
 | 7 | Kod altyapısı, sızıntısız pipeline, DT/RF gerçek sonuçlar (mevcut kod) |
 | 8 | Çapraz doğrulamalı hiperparametre arama (SMOTE imblearn Pipeline içinde, gerekirse örneklemle) + XGBoost/LightGBM karşılaştırması |
-| 9 | `src/inference.py` + Streamlit `app.py` (CSV yükle, tahmin + güven skoru, dağılım grafiği, kritik saldırıda st.error) + `logging` ile `security.log` (RotatingFileHandler, CRITICAL; alarmları dosya bazında özetle) |
+| 9 | `src/inference.py` + Streamlit `app.py` (CSV yükle, tahmin + güven skoru, dağılım grafiği, kritik saldırıda st.error) + `logging` ile `security.log` (RotatingFileHandler, CRITICAL; alarmları dosya bazında özetle) + SQLite geçmiş + demo dosyaları — **tamamlandı** |
 | 10 | Test: N2 (<50 ms tek kayıt, 10.000 satır <5 sn), N3 (RAM <1,5 GB), N4 (bozuk/eksik sütunlu CSV'de çökmeme), demo CSV'leri (test kümesinden: normal, ddos, karma) üreten betik |
 | 11 | Öznitelik önem analizi, arayüz iyileştirme, README; isteğe bağlı VirtualBox laboratuvarında nmap + CICFlowMeter canlı demo denemesi |
 | 12 | Dönem sonu teknik raporu |

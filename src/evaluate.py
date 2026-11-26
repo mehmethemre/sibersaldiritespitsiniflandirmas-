@@ -11,6 +11,29 @@ from sklearn.metrics import (accuracy_score, classification_report,
 from .config import LATENCY_REPEATS
 
 
+def predict_with_threshold(proba, botnet_col, t):
+    """Botnet olasılığı >= t ise Botnet; değilse Botnet dışındaki en olası sütun.
+
+    proba: predict_proba çıktısı (satır x sınıf). t=None -> düz argmax (varsayılan karar).
+    Dönen değerler SÜTUN indeksidir; sınıf koduna çevirmek için model.classes_[...] kullanılır.
+    Eğitimdeki değerlendirme ve uygulamadaki çıkarım bu TEK fonksiyonu kullanır.
+    """
+    if t is None or botnet_col is None:
+        return proba.argmax(axis=1)
+    rest = proba.copy()
+    rest[:, botnet_col] = -np.inf          # Botnet'i dışarıda bırakıp en olası sınıfı bul
+    return np.where(proba[:, botnet_col] >= t, botnet_col, rest.argmax(axis=1))
+
+
+def predict_classes(model, X, class_names, botnet_threshold=None):
+    """predict_proba + Botnet eşiği -> (sınıf kodları, olasılık matrisi)."""
+    proba = model.predict_proba(X)
+    classes = np.asarray(model.classes_)
+    col = (list(classes).index(class_names.index("Botnet"))
+           if botnet_threshold is not None and "Botnet" in class_names else None)
+    return classes[predict_with_threshold(proba, col, botnet_threshold)], proba
+
+
 def single_latency_ms(model, X, repeats=LATENCY_REPEATS):
     """Tek kayıtlık predict() çağrısının medyan süresi (ms).
 
@@ -54,9 +77,11 @@ def plot_confusion(cm, class_names, title, path):
     plt.close(fig)
 
 
-def evaluate_model(name, model, X_test, y_test, class_names, out_dir, log=print):
+def evaluate_model(name, model, X_test, y_test, class_names, out_dir, log=print,
+                   botnet_threshold=None):
+    """botnet_threshold verilirse tahmin predict_proba + eşik kuralıyla yapılır."""
     t0 = time.perf_counter()
-    y_pred = model.predict(X_test)
+    y_pred, _ = predict_classes(model, X_test, class_names, botnet_threshold)
     batch_s = time.perf_counter() - t0
 
     labels = list(range(len(class_names)))

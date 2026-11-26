@@ -1,0 +1,354 @@
+{
+  "zaman": "2026-11-25 14:58",
+  "ornekleme_orani": null,
+  "donanim": {
+    "isletim_sistemi": "Windows 10",
+    "islemci": "12th Gen Intel(R) Core(TM) i5-12500H",
+    "mantiksal_cekirdek": 16,
+    "ram_gb": 31.8,
+    "python": "3.11.9",
+    "pandas": "3.1.1",
+    "numpy": "2.4.6",
+    "scikit_learn": "1.9.1"
+  },
+  "temizlik": {
+    "ham_satir": 2830743,
+    "kapsam_disi_silinen": 47,
+    "kapsam_disi_sonrasi": 2830696,
+    "inf_nan_silinen": 2867,
+    "inf_nan_sonrasi": 2827829,
+    "tekrar_silinen": 628872,
+    "tekrar_sonrasi": 2198957,
+    "sabit_sutunlar": [
+      "Bwd PSH Flags",
+      "Bwd URG Flags",
+      "Fwd Avg Bytes/Bulk",
+      "Fwd Avg Packets/Bulk",
+      "Fwd Avg Bulk Rate",
+      "Bwd Avg Bytes/Bulk",
+      "Bwd Avg Packets/Bulk",
+      "Bwd Avg Bulk Rate"
+    ]
+  },
+  "egitim_satir": 1759165,
+  "test_satir": 439792,
+  "sinif_adlari": [
+    "Benign",
+    "DoS/DDoS",
+    "PortScan",
+    "Brute Force",
+    "Web Attack",
+    "Botnet"
+  ],
+  "dagilim": {
+    "egitim_once": {
+      "Benign": 1490021,
+      "DoS/DDoS": 257395,
+      "Brute Force": 7320,
+      "Web Attack": 1714,
+      "PortScan": 1565,
+      "Botnet": 1150
+    },
+    "egitim_sonra": {
+      "Benign": 1490021,
+      "DoS/DDoS": 257395,
+      "PortScan": 100000,
+      "Brute Force": 100000,
+      "Web Attack": 100000,
+      "Botnet": 100000
+    },
+    "test": {
+      "Benign": 372506,
+      "DoS/DDoS": 64349,
+      "Brute Force": 1830,
+      "Web Attack": 429,
+      "PortScan": 391,
+      "Botnet": 287
+    }
+  },
+  "smote_yontemi": "imblearn.SMOTE",
+  "oznitelik_secimi": {
+    "korelasyonla_elenen": [
+      "Fwd IAT Total",
+      "Flow IAT Max",
+      "Idle Max",
+      "Idle Mean",
+      "Fwd Header Length",
+      "Subflow Bwd Bytes",
+      "Fwd Packets/s",
+      "Subflow Fwd Bytes",
+      "Total Backward Packets",
+      "Subflow Bwd Packets",
+      "Bwd Packet Length Std",
+      "Total Fwd Packets",
+      "Subflow Fwd Packets",
+      "Packet Length Std",
+      "Avg Bwd Segment Size",
+      "Bwd Packet Length Mean",
+      "Packet Length Mean",
+      "Fwd Packet Length Std",
+      "Fwd Packet Length Mean",
+      "SYN Flag Count",
+      "RST Flag Count",
+      "CWE Flag Count"
+    ],
+    "korelasyon_sonrasi_sayi": 47,
+    "secilen_sayi": 27
+  },
+  "secilen_oznitelikler": [
+    "Bwd Packet Length Max",
+    "Average Packet Size",
+    "Fwd IAT Max",
+    "Fwd IAT Std",
+    "Packet Length Variance",
+    "Max Packet Length",
+    "Idle Min",
+    "Flow IAT Std",
+    "Flow Duration",
+    "ACK Flag Count",
+    "PSH Flag Count",
+    "FIN Flag Count",
+    "Init_Win_bytes_forward",
+    "Fwd Header Length.1",
+    "Flow IAT Mean",
+    "Fwd IAT Mean",
+    "Bwd IAT Max",
+    "Bwd IAT Total",
+    "Down/Up Ratio",
+    "Min Packet Length",
+    "Fwd Packet Length Max",
+    "Fwd PSH Flags",
+    "act_data_pkt_fwd",
+    "Bwd IAT Std",
+    "Avg Fwd Segment Size",
+    "Fwd IAT Min",
+    "URG Flag Count"
+  ],
+  "modeller": {
+    "Decision Tree": {
+      "accuracy": 0.996100429293848,
+      "weighted_precision": 0.9969700246031441,
+      "weighted_recall": 0.996100429293848,
+      "weighted_f1": 0.9964066285748596,
+      "macro_f1": 0.8760852129243561,
+      "per_class": {
+        "Benign": {
+          "precision": 0.9986741324038814,
+          "recall": 0.9968671645557386,
+          "f1-score": 0.9977698303727608,
+          "support": 372506.0
+        },
+        "DoS/DDoS": {
+          "precision": 0.9962708109035872,
+          "recall": 0.9922454117391102,
+          "f1-score": 0.9942540369672527,
+          "support": 64349.0
+        },
+        "PortScan": {
+          "precision": 0.8687782805429864,
+          "recall": 0.9820971867007673,
+          "f1-score": 0.921968787515006,
+          "support": 391.0
+        },
+        "Brute Force": {
+          "precision": 0.8290793072014585,
+          "recall": 0.9939890710382514,
+          "f1-score": 0.9040755467196819,
+          "support": 1830.0
+        },
+        "Web Attack": {
+          "precision": 0.8804347826086957,
+          "recall": 0.9440559440559441,
+          "f1-score": 0.9111361079865017,
+          "support": 429.0
+        },
+        "Botnet": {
+          "precision": 0.36129032258064514,
+          "recall": 0.975609756097561,
+          "f1-score": 0.527306967984934,
+          "support": 287.0
+        }
+      },
+      "batch_total_s": 0.035759799999596,
+      "batch_per_flow_ms": 8.131071051678066e-05,
+      "single_latency_median_ms": 0.06989999974393868,
+      "single_latency_p95_ms": 0.1017949999550182,
+      "most_confused": {
+        "gercek": "Benign",
+        "tahmin": "Botnet",
+        "sayi": 492
+      },
+      "confusion_matrix": [
+        [
+          371339,
+          235,
+          28,
+          372,
+          40,
+          492
+        ],
+        [
+          452,
+          63850,
+          30,
+          0,
+          14,
+          3
+        ],
+        [
+          3,
+          2,
+          384,
+          1,
+          1,
+          0
+        ],
+        [
+          10,
+          1,
+          0,
+          1819,
+          0,
+          0
+        ],
+        [
+          21,
+          1,
+          0,
+          2,
+          405,
+          0
+        ],
+        [
+          7,
+          0,
+          0,
+          0,
+          0,
+          280
+        ]
+      ],
+      "egitim_suresi_s": 31.919851200000267,
+      "dosya_mb": 0.14255619049072266,
+      "parametreler": {
+        "criterion": "gini",
+        "max_depth": 15,
+        "min_samples_split": 10
+      }
+    },
+    "Random Forest": {
+      "accuracy": 0.9984606359369884,
+      "weighted_precision": 0.9986951433658862,
+      "weighted_recall": 0.9984606359369884,
+      "weighted_f1": 0.9985398935401489,
+      "macro_f1": 0.9303671809556473,
+      "per_class": {
+        "Benign": {
+          "precision": 0.9991945270799996,
+          "recall": 0.9990496797367022,
+          "f1-score": 0.9991220981585539,
+          "support": 372506.0
+        },
+        "DoS/DDoS": {
+          "precision": 0.9986289845137569,
+          "recall": 0.9960993954840013,
+          "f1-score": 0.997362586066052,
+          "support": 64349.0
+        },
+        "PortScan": {
+          "precision": 0.9016393442622951,
+          "recall": 0.9846547314578005,
+          "f1-score": 0.941320293398533,
+          "support": 391.0
+        },
+        "Brute Force": {
+          "precision": 0.9994422755158952,
+          "recall": 0.9792349726775956,
+          "f1-score": 0.9892354402428927,
+          "support": 1830.0
+        },
+        "Web Attack": {
+          "precision": 0.9699074074074074,
+          "recall": 0.9766899766899767,
+          "f1-score": 0.9732868757259001,
+          "support": 429.0
+        },
+        "Botnet": {
+          "precision": 0.5358565737051793,
+          "recall": 0.9372822299651568,
+          "f1-score": 0.6818757921419518,
+          "support": 287.0
+        }
+      },
+      "batch_total_s": 0.6041425999997045,
+      "batch_per_flow_ms": 0.0013737007494445204,
+      "single_latency_median_ms": 3.5277499998755957,
+      "single_latency_p95_ms": 3.9633449996699706,
+      "most_confused": {
+        "gercek": "Benign",
+        "tahmin": "Botnet",
+        "sayi": 233
+      },
+      "confusion_matrix": [
+        [
+          372152,
+          84,
+          26,
+          1,
+          10,
+          233
+        ],
+        [
+          233,
+          64098,
+          16,
+          0,
+          2,
+          0
+        ],
+        [
+          2,
+          3,
+          385,
+          0,
+          1,
+          0
+        ],
+        [
+          38,
+          0,
+          0,
+          1792,
+          0,
+          0
+        ],
+        [
+          9,
+          1,
+          0,
+          0,
+          419,
+          0
+        ],
+        [
+          18,
+          0,
+          0,
+          0,
+          0,
+          269
+        ]
+      ],
+      "egitim_suresi_s": 106.83901379999998,
+      "dosya_mb": 32.75447940826416,
+      "parametreler": {
+        "criterion": "gini",
+        "max_depth": 20,
+        "min_samples_split": 5,
+        "n_estimators": 100
+      }
+    }
+  },
+  "egitim_sureci_ram_mb": 3842.1,
+  "toplam_sure_dk": 2.99
+}

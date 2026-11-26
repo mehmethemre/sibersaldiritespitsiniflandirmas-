@@ -47,7 +47,7 @@ PORT = config.PORT_COLUMN
 PORT_CAT = "Port Kategorisi"
 COUNT = "_kopya_sayisi"          # temizlikte eklenen ham kopya sayısı (öznitelik değil)
 
-# 7. hafta sonuçları (reports/metrics.json, tam veri, test kümesi) — karşılaştırma için
+# 7. hafta sonuçları (reports/hafta7/metrics.json, tam veri, test kümesi) — karşılaştırma için
 WEEK7 = {"accuracy": 0.9985, "macro_f1": 0.9304, "f1_Botnet": 0.6819,
          "f1_PortScan": 0.9413, "benign_to_botnet": 233}
 

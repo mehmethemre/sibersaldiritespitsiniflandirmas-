@@ -135,8 +135,14 @@ def _stratified_sample(X, y, size):
 
 
 # ---------------------------------------------------------------- 3) öznitelik seçimi
-def select_features(X_train: pd.DataFrame, y_train, log=print):
-    """Yalnızca eğitim kümesi kullanılır. Test kümesi bu fonksiyona hiç girmez."""
+def select_features(X_train: pd.DataFrame, y_train, log=print, use_extratrees=True):
+    """Yalnızca eğitim kümesi kullanılır. Test kümesi bu fonksiyona hiç girmez.
+
+    use_extratrees=False: yalnızca korelasyon elemesi yapılır, kalan TÜM öznitelikler döner.
+    9. haftadan itibaren ana pipeline böyle çalışır (8. hafta Ek 1: ExtraTrees adımı doğrulamada
+    yarar sağlamadı ve küçük veri değişikliklerinde seçilen kümeyi değiştirip kararsızlık yarattı).
+    Varsayılan True, 8. hafta deney betikleri aynı sonucu üretebilsin diye korunur.
+    """
     Xs, ys = _stratified_sample(X_train, y_train, FS_SAMPLE_SIZE)
 
     # a) Korelasyon: varyansı yüksek olandan başlayarak, tutulanlarla > eşik olanları ele
@@ -149,6 +155,11 @@ def select_features(X_train: pd.DataFrame, y_train, log=print):
         else:
             kept.append(c)
     log(f"Korelasyon elemesi: {len(dropped)} öznitelik elendi, {len(kept)} kaldı")
+
+    if not use_extratrees:
+        log("ExtraTrees seçimi kapalı: korelasyon sonrası tüm öznitelikler kullanılıyor")
+        return list(kept), {"korelasyonla_elenen": dropped, "korelasyon_sonrasi_sayi": len(kept),
+                            "secilen_sayi": len(kept), "onem_skorlari": {}}
 
     # b) ExtraTrees önem sıralaması
     et = ExtraTreesClassifier(n_estimators=100, n_jobs=-1, random_state=RANDOM_STATE)
