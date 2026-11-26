@@ -16,3 +16,7 @@ reports/**/deneme_frac*/
 # Gizli bilgi / yerel ayarlar
 .env
 .claude/settings.local.json
+
+# 9. hafta: uygulamanın yerel verisi (analiz geçmişi ve güvenlik günlüğü)
+data/*.db
+logs/
