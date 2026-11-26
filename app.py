@@ -20,7 +20,7 @@ import pandas as pd
 import streamlit as st
 
 from src import config, database
-from src.alarm import get_security_logger
+from src.alarm import alarm_threshold, card_type, get_security_logger
 from src.inference import InferenceError, Predictor
 from src.service import run_analysis
 
@@ -43,6 +43,21 @@ def pct(x):
 
 def tr_int(n):
     return f"{int(n):,}".replace(",", ".")
+
+
+def threshold_text(min_flows, n_rows):
+    """Bu dosyada uygulanan sınıf bazında eşikler: max(N_min, oran × n)."""
+    parts = []
+    for c in config.CLASS_ORDER:
+        if c in config.ALARM_LEVELS:
+            rate = config.ALARM_RATES.get(c, 0.0)
+            how = f"max({min_flows}, {fmt_rate(rate)} × {tr_int(n_rows)})" if rate else "sabit"
+            parts.append(f"{c} {tr_int(alarm_threshold(c, n_rows, min_flows))} ({how})")
+    return f"Alarm eşikleri (bu dosya, {tr_int(n_rows)} akış): " + "; ".join(parts) + "."
+
+
+def fmt_rate(rate):
+    return f"{rate:.5f}".rstrip("0").replace(".", ",")
 
 
 # ------------------------------------------------------------------ uyarı kartı
@@ -108,18 +123,19 @@ def show_result(state):
     if alarms:
         for a in alarms:
             count, conf = tr_int(a["adet"]), pct(a["ortalama_guven"])
-            if a["seviye"] == "CRITICAL":
+            kind = card_type(a)
+            if kind == "kritik":
                 st.error(f"KRİTİK SALDIRI: **{a['sinif']}** — {count} akış "
                          f"(ortalama güven {conf})", icon="🚨")
-            elif a["dusuk_sayi"]:
+            elif kind == "incelenmeli":
                 st.info(f"İncelenmeli: **{a['sinif']}** — {count} akış (ortalama güven {conf}). "
                         f"Alarm eşiği {a['esik']} akış; bu sayı eşiğin altında olduğu için alarm "
                         "verilmedi, düşük sayıda şüpheli akış olarak gösteriliyor.", icon="🔎")
             else:
                 warning_card(f"UYARI: {WARNING_TITLES.get(a['sinif'], a['sinif'] + ' tespit edildi')}"
                              f" ({count} akış)", f"Ortalama güven {conf}")
-        st.caption(f"Alarm eşiği: en az {state['min_flows']} akış (analiz anında uygulandı). "
-                   f"Alarmlar logs/security.log dosyasına ve veritabanına (analiz "
+        st.caption(threshold_text(state["min_flows"], res.analyzed_rows)
+                   + f" Alarmlar logs/security.log dosyasına ve veritabanına (analiz "
                    f"#{state['id']}) kaydedildi.")
     else:
         st.success("Saldırı tespit edilmedi: tüm akışlar Benign olarak sınıflandı.", icon="✅")
@@ -245,11 +261,15 @@ def page_history():
 def main():
     page = st.sidebar.radio("Sayfa", ["Analiz", "Geçmiş Analizler"])
     min_flows = st.sidebar.number_input(
-        "Alarm eşiği (en az kaç akış)", min_value=1, max_value=100_000,
+        "Alarm eşiği N_min (en az kaç akış)", min_value=1, max_value=100_000,
         value=config.ALARM_MIN_FLOWS, step=1,
-        help="Bir saldırı sınıfından bu sayıdan az akış bulunursa kritik alarm yerine "
-             "'düşük sayıda şüpheli akış, incelenmeli' uyarısı verilir. Tahminleri "
-             "değiştirmez. Varsayılan değer doğrulama kümesinde seçildi.")
+        help="Bir saldırı sınıfından eşikten az akış bulunursa kritik alarm yerine "
+             "'düşük sayıda şüpheli akış, incelenmeli' uyarısı verilir. Eşik = max(N_min, "
+             "oran × analiz edilen akış); büyük dosyalarda oran devreye girer. Tahminleri "
+             "değiştirmez. Değerler doğrulama kümesinde seçildi.")
+    st.sidebar.caption("Oranlar (sabit): " + ", ".join(
+        f"{c} {fmt_rate(r)}" if r else f"{c} yok"
+        for c, r in config.ALARM_RATES.items()))
     # "23." satır başında Markdown'da numaralı liste sanılır; ters bölü ile kaçırılır
     st.sidebar.caption("23\\. Grup · Fırat Üniversitesi Mühendislik Tasarımı")
     try:

@@ -7,7 +7,7 @@ Analizler geçici bir veritabanına yazılır (uygulamanın asıl geçmişine ka
 Alarmlar iki kez hesaplanır: eşiksiz (N=1, her tespit edilen akış alarm) ve eşikli
 (config.ALARM_MIN_FLOWS). Tahminler ikisinde de aynıdır; yalnızca alarm seviyesi değişir.
 
-Kullanım:  python scripts/check_demo_files.py
+Kullanım:  python scripts/check_demo_files.py [hafta10]   (çıktı klasörü; varsayılan hafta9)
 """
 import json
 import statistics
@@ -37,20 +37,27 @@ def _fmt(alarms):
 
 
 def compare_thresholds(summary, n=None):
-    """Aynı sınıf özetinden eşiksiz (N=1) ve eşikli alarmları üretir (log/DB'ye yazmadan)."""
+    """Aynı sınıf özetinden eşiksiz (N=1) ve eşikli alarmları üretir (log/DB'ye yazmadan).
+
+    Eşikli = uygulamadaki kural (N_min + config.ALARM_RATES); eşiksiz = oran yok, N=1.
+    """
     n = config.ALARM_MIN_FLOWS if n is None else n
-    a1, an = raise_alarms(summary, "-", min_flows=1), raise_alarms(summary, "-", min_flows=n)
+    a1 = raise_alarms(summary, "-", min_flows=1, rates={})
+    an = raise_alarms(summary, "-", min_flows=n)
+    a9 = raise_alarms(summary, "-", min_flows=n, rates={})     # 9. hafta kuralı: sabit N
     return {"esiksiz_kritik": sum(a["seviye"] == "CRITICAL" for a in a1),
             "esiksiz_alarmlar": _fmt(a1), "esik_N": n,
             "esikli_kritik": sum(a["seviye"] == "CRITICAL" for a in an),
             "esikli_incelenmeli": sum(a["dusuk_sayi"] for a in an),
-            "esikli_alarmlar": _fmt(an)}
+            "esikli_alarmlar": _fmt(an), "hafta9_kural_alarmlar": _fmt(a9),
+            "hafta9_ile_ayni": _fmt(a9) == _fmt(an)}
 
 
-def main():
+def main(argv=None):
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    out = config.REPORTS_DIR / "hafta9"
+    week = (argv or sys.argv[1:] or ["hafta9"])[0]      # ör. python scripts/check_demo_files.py hafta10
+    out = config.REPORTS_DIR / week
     out.mkdir(parents=True, exist_ok=True)
     predictor = Predictor()
     rows = []
