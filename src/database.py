@@ -45,13 +45,16 @@ CREATE TABLE IF NOT EXISTS sinif_ozetleri (
 );
 
 -- Alarmlar: saldırı sınıfı başına tek satır. seviye yalnızca WARNING veya CRITICAL olabilir.
+-- dusuk_sayi = 1: akış sayısı alarm eşiğinin (esik) altında kaldığı için WARNING'e düşürüldü.
 CREATE TABLE IF NOT EXISTS alarmlar (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    analiz_id INTEGER NOT NULL REFERENCES analizler(id) ON DELETE CASCADE,
-    sinif     TEXT    NOT NULL,
-    adet      INTEGER NOT NULL CHECK (adet > 0),
-    seviye    TEXT    NOT NULL CHECK (seviye IN ('WARNING', 'CRITICAL')),
-    zaman     TEXT    NOT NULL
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    analiz_id  INTEGER NOT NULL REFERENCES analizler(id) ON DELETE CASCADE,
+    sinif      TEXT    NOT NULL,
+    adet       INTEGER NOT NULL CHECK (adet > 0),
+    seviye     TEXT    NOT NULL CHECK (seviye IN ('WARNING', 'CRITICAL')),
+    zaman      TEXT    NOT NULL,
+    dusuk_sayi INTEGER NOT NULL DEFAULT 0 CHECK (dusuk_sayi IN (0, 1)),
+    esik       INTEGER
 );
 
 -- Bir analizin alarmlarını hızlı bulmak için dizin.
@@ -76,7 +79,28 @@ def connect(path=config.DB_PATH) -> sqlite3.Connection:
     conn.execute("PRAGMA foreign_keys = ON")
     # Şemadaki tüm CREATE ... IF NOT EXISTS ifadelerini çalıştır (varsa dokunmaz)
     conn.executescript(SCHEMA)
+    _migrate(conn)
     return conn
+
+
+# Sonradan eklenen sütunlar: (tablo, sütun, tanım). Eski bir veritabanı dosyasında tablo zaten
+# var olduğu için CREATE TABLE IF NOT EXISTS yeni sütunları eklemez; bu adım ekler.
+MIGRATIONS = [
+    ("alarmlar", "dusuk_sayi", "INTEGER NOT NULL DEFAULT 0 CHECK (dusuk_sayi IN (0, 1))"),
+    ("alarmlar", "esik", "INTEGER"),
+]
+
+
+def _migrate(conn):
+    for table, column, definition in MIGRATIONS:
+        # PRAGMA table_info: tablonun sütunlarını listeler (satır başına bir sütun, ad 'name')
+        existing = {r["name"] for r in conn.execute(f"PRAGMA table_info({table})")}
+        if column not in existing:
+            with conn:
+                # Eksik sütunu ekler; eski satırlara DEFAULT değeri (veya NULL) yazılır.
+                # Tablo/sütun adları yukarıdaki sabit listeden gelir, kullanıcı girdisi değildir;
+                # SQL'de ad (identifier) parametre olarak verilemediği için metne yazılır.
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
 
 def save_analysis(conn, dosya_adi, toplam_satir, atlanan_satir, sure_sn, model_surumu,
@@ -105,12 +129,15 @@ def save_class_summaries(conn, analiz_id, rows):
             "VALUES (?, ?, ?, ?)", data)
 
 
-def save_alarm(conn, analiz_id, sinif, adet, seviye, zaman=None) -> int:
+def save_alarm(conn, analiz_id, sinif, adet, seviye, zaman=None, dusuk_sayi=False,
+               esik=None) -> int:
     with conn:
         # Alarm kaydı; analiz_id geçerli bir analize işaret etmiyorsa FOREIGN KEY hata verir
         cur = conn.execute(
-            "INSERT INTO alarmlar (analiz_id, sinif, adet, seviye, zaman) VALUES (?, ?, ?, ?, ?)",
-            (int(analiz_id), str(sinif), int(adet), str(seviye), zaman or _now()))
+            "INSERT INTO alarmlar (analiz_id, sinif, adet, seviye, zaman, dusuk_sayi, esik) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (int(analiz_id), str(sinif), int(adet), str(seviye), zaman or _now(),
+             int(bool(dusuk_sayi)), None if esik is None else int(esik)))
     return int(cur.lastrowid)
 
 
@@ -126,6 +153,8 @@ def list_analyses(conn, limit=200) -> pd.DataFrame:
     sql = """
         SELECT a.id, a.dosya_adi, a.tarih, a.toplam_satir, a.atlanan_satir, a.sure_sn,
                a.model_surumu,
+               (SELECT COUNT(*) FROM alarmlar al
+                 WHERE al.analiz_id = a.id AND al.seviye = 'CRITICAL') AS kritik_alarm,
                (SELECT COUNT(*) FROM alarmlar al WHERE al.analiz_id = a.id) AS alarm_sayisi,
                (SELECT COALESCE(SUM(s.adet), 0) FROM sinif_ozetleri s
                  WHERE s.analiz_id = a.id AND s.sinif <> 'Benign') AS saldiri_akisi
@@ -140,7 +169,8 @@ def list_alarms(conn, analiz_id=None, limit=500) -> pd.DataFrame:
     """Alarmlar, ait oldukları dosya adıyla birlikte (isteğe bağlı olarak tek analiz için)."""
     # JOIN: her alarmın hangi dosyanın analizinden geldiğini göstermek için
     sql = """
-        SELECT al.id, al.analiz_id, a.dosya_adi, al.sinif, al.adet, al.seviye, al.zaman
+        SELECT al.id, al.analiz_id, a.dosya_adi, al.sinif, al.adet, al.seviye,
+               al.dusuk_sayi, al.esik, al.zaman
         FROM alarmlar al JOIN analizler a ON a.id = al.analiz_id
         WHERE (? IS NULL OR al.analiz_id = ?)
         ORDER BY al.id DESC

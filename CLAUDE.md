@@ -36,6 +36,10 @@ Sayı uydurma, tahmini değeri ölçülmüş gibi sunma. Sonuç yoksa "[doldurul
   Botnet, değilse kalan en olası sınıf). Eşik kuralı tek yerde: `src/evaluate.py::predict_classes`.
 - Alarm seviyeleri: DoS/DDoS, Botnet, Web Attack, Brute Force → CRITICAL; PortScan → WARNING;
   analiz başına sınıf başına tek log satırı (`src/alarm.py`).
+- Alarm eşiği `ALARM_MIN_FLOWS = 9`: bir sınıftan 9'dan az akış → WARNING + "düşük sayıda
+  şüpheli akış, incelenmeli" (gizlenmez, tahminler değişmez). Doğrulama kümesinde seçildi
+  (`experiments/alarm_threshold.py`): 10.000 satırlık normal dosyaların ≤ %5'inde yanlış KRİTİK.
+  Sınırı: sabit N büyük dosyalarda (≥ 100.000 satır) yetersiz; oran tabanlı eşik ileride düşünülebilir.
 - Gecikme: tek kayıtlık predict() medyanı (n_jobs=1) ayrı, toplu akış başı ortalama ayrı raporlanır.
 - Metrikler `classification_report` çıktısından alınır; Macro F1 de raporlanır.
 

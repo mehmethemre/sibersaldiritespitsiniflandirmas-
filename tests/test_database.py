@@ -70,3 +70,27 @@ def test_file_database_persists(tmp_path):
     c = database.connect(p)
     assert len(database.list_analyses(c)) == 1
     c.close()
+
+
+def test_old_database_is_migrated(tmp_path):
+    """9. haftanın ilk sürümüyle oluşturulmuş (dusuk_sayi/esik sütunu olmayan) dosya."""
+    p = tmp_path / "eski.db"
+    old = sqlite3.connect(p)
+    old.executescript("""
+        CREATE TABLE analizler (id INTEGER PRIMARY KEY AUTOINCREMENT, dosya_adi TEXT NOT NULL,
+            tarih TEXT NOT NULL, toplam_satir INTEGER NOT NULL, atlanan_satir INTEGER NOT NULL,
+            sure_sn REAL NOT NULL, model_surumu TEXT NOT NULL);
+        CREATE TABLE alarmlar (id INTEGER PRIMARY KEY AUTOINCREMENT,
+            analiz_id INTEGER NOT NULL REFERENCES analizler(id) ON DELETE CASCADE,
+            sinif TEXT NOT NULL, adet INTEGER NOT NULL, seviye TEXT NOT NULL, zaman TEXT NOT NULL);
+        INSERT INTO analizler VALUES (1, 'eski.csv', '2026-11-26', 10, 0, 0.1, 'v0');
+        INSERT INTO alarmlar VALUES (1, 1, 'Botnet', 1, 'CRITICAL', '2026-11-26');
+    """)
+    old.commit()
+    old.close()
+    c = database.connect(p)
+    al = database.list_alarms(c)
+    assert al.loc[0, "dusuk_sayi"] == 0 and pd.isna(al.loc[0, "esik"])   # eski satır korunur
+    database.save_alarm(c, 1, "DoS/DDoS", 2, "WARNING", dusuk_sayi=True, esik=5)
+    assert database.list_alarms(c).loc[0, "esik"] == 5
+    c.close()

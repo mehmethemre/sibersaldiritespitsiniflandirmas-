@@ -7,8 +7,9 @@ from . import config, database
 from .alarm import raise_alarms
 
 
-def run_analysis(predictor, source, file_name, db_path=config.DB_PATH, logger=None):
-    """Dönüş: (AnalysisResult, analiz_id, alarm listesi).
+def run_analysis(predictor, source, file_name, db_path=config.DB_PATH, logger=None,
+                 min_flows=config.ALARM_MIN_FLOWS):
+    """Dönüş: (AnalysisResult, analiz_id, alarm listesi). min_flows: alarm eşiği.
 
     Tahmin başarısız olursa (InferenceError) veritabanına hiçbir şey yazılmaz.
     """
@@ -19,7 +20,8 @@ def run_analysis(predictor, source, file_name, db_path=config.DB_PATH, logger=No
                                            result.skipped_rows, result.duration_s,
                                            result.model_version)
         database.save_class_summaries(conn, analiz_id, result.class_summary)
-        alarms = raise_alarms(result.class_summary, file_name, analiz_id, conn, logger)
+        alarms = raise_alarms(result.class_summary, file_name, analiz_id, conn, logger,
+                              min_flows=min_flows)
     finally:
         conn.close()
     return result, analiz_id, alarms

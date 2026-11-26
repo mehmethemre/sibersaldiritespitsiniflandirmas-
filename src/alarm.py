@@ -7,6 +7,8 @@
   10.000 satır değil, "DoS/DDoS adet=10000" diyen tek bir satır üretir; günlük okunabilir kalır.
 * Seviyeler config.ALARM_LEVELS'tan gelir: DoS/DDoS, Botnet, Web Attack, Brute Force -> CRITICAL;
   PortScan -> WARNING (keşif aşaması, tek başına zarar vermez); Benign -> alarm yok.
+* Alarm eşiği (config.ALARM_MIN_FLOWS): bir sınıftan bu sayıdan az akış bulunduysa seviye
+  WARNING olur ve "düşük sayıda şüpheli akış, incelenmeli" diye işaretlenir.
 """
 import logging
 from logging.handlers import RotatingFileHandler
@@ -38,26 +40,48 @@ def get_security_logger(log_dir=config.LOG_DIR, max_bytes=1_000_000, backup_coun
     return logger
 
 
-def raise_alarms(class_summary, file_name, analiz_id=None, conn=None, logger=None):
+def alarm_level(sinif, adet, min_flows=config.ALARM_MIN_FLOWS):
+    """(seviye, dusuk_sayi) döndürür; Benign/bilinmeyen sınıf ya da 0 akış için (None, False).
+
+    Alarm eşiği: bir saldırı sınıfından `min_flows`'tan AZ akış bulunduysa alarm yükseltilmez,
+    WARNING + "düşük sayıda şüpheli akış, incelenmeli" olarak işaretlenir. Tek tük yanlış
+    tahminler (normal trafikte 1-2 akış) böylece KRİTİK alarm üretmez ama gizlenmez de.
+    Tahminler değişmez; eşik yalnızca alarmın seviyesini belirler.
+    """
+    level = config.ALARM_LEVELS.get(sinif)
+    if level is None or int(adet) <= 0:
+        return None, False
+    if int(adet) < int(min_flows):
+        return "WARNING", True
+    return level, False
+
+
+def raise_alarms(class_summary, file_name, analiz_id=None, conn=None, logger=None,
+                 min_flows=config.ALARM_MIN_FLOWS):
     """Sınıf özetinden alarm üretir; günlüğe ve (conn verilirse) veritabanına yazar.
 
     class_summary: sinif, adet, ortalama_guven sütunlu DataFrame (AnalysisResult.class_summary).
+    min_flows: alarm eşiği (en az bu kadar akış -> sınıfın normal seviyesi).
     Dönüş: üretilen alarmların listesi (sözlük).
     """
     alarms = []
     for row in class_summary.itertuples(index=False):
-        level = config.ALARM_LEVELS.get(row.sinif)
-        if level is None or int(row.adet) <= 0:          # Benign veya bilinmeyen sınıf
+        level, low = alarm_level(row.sinif, row.adet, min_flows)
+        if level is None:                                 # Benign veya bilinmeyen sınıf
             continue
         alarm = {"sinif": row.sinif, "adet": int(row.adet), "seviye": level,
-                 "ortalama_guven": float(row.ortalama_guven)}
+                 "ortalama_guven": float(row.ortalama_guven), "dusuk_sayi": low,
+                 "esik": int(min_flows)}
         if logger is not None:
+            note = f" dusuk_sayi(esik={int(min_flows)}) incelenmeli" if low else ""
             logger.log(LEVELS[level], f"analiz_id={analiz_id} dosya={file_name} "
                                       f"sinif={row.sinif} adet={int(row.adet)} "
-                                      f"ort_guven={float(row.ortalama_guven):.3f}")
+                                      f"ort_guven={float(row.ortalama_guven):.3f}{note}")
         if conn is not None and analiz_id is not None:
-            alarm["id"] = database.save_alarm(conn, analiz_id, row.sinif, row.adet, level)
+            alarm["id"] = database.save_alarm(conn, analiz_id, row.sinif, row.adet, level,
+                                              dusuk_sayi=low, esik=min_flows)
         alarms.append(alarm)
-    # Önce CRITICAL, sonra en çok akış: arayüzde en önemli alarm en üstte görünsün
-    alarms.sort(key=lambda a: (a["seviye"] != "CRITICAL", -a["adet"]))
+    # Sıra: önce CRITICAL, sonra normal WARNING (PortScan), en sonda düşük sayılı uyarılar;
+    # her grupta en çok akıştan aza. Arayüzde en önemli alarm en üstte görünür.
+    alarms.sort(key=lambda a: (a["seviye"] != "CRITICAL", a["dusuk_sayi"], -a["adet"]))
     return alarms

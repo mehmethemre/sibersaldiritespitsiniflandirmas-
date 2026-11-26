@@ -4,6 +4,8 @@ sonuçları reports/hafta9/ altına yazar. Arayüz açmadan uçtan uca kontrol i
 Ölçülen süre: CSV okuma + doğrulama + ölçekleme + tahmin (arayüzde gösterilen süreyle aynı).
 Her dosya 3 kez analiz edilir; ilk çalıştırma ve 3 çalıştırmanın medyanı ayrı raporlanır.
 Analizler geçici bir veritabanına yazılır (uygulamanın asıl geçmişine karışmaz).
+Alarmlar iki kez hesaplanır: eşiksiz (N=1, her tespit edilen akış alarm) ve eşikli
+(config.ALARM_MIN_FLOWS). Tahminler ikisinde de aynıdır; yalnızca alarm seviyesi değişir.
 
 Kullanım:  python scripts/check_demo_files.py
 """
@@ -20,13 +22,29 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src import config  # noqa: E402
-from src.alarm import get_security_logger  # noqa: E402
+from src.alarm import get_security_logger, raise_alarms  # noqa: E402
 from src.inference import InferenceError, Predictor  # noqa: E402
 from src.service import run_analysis  # noqa: E402
 
 FILES = ["demo_normal.csv", "demo_ddos.csv", "demo_portscan.csv", "demo_karma.csv",
          "demo_10000_satir.csv", "demo_bozuk.csv", "demo_eksik_sutun.csv"]
 REPEATS = 3
+
+
+def _fmt(alarms):
+    return "; ".join(f"{a['sinif']} {a['adet']} "
+                     f"{'incelenmeli' if a['dusuk_sayi'] else a['seviye']}" for a in alarms)
+
+
+def compare_thresholds(summary, n=None):
+    """Aynı sınıf özetinden eşiksiz (N=1) ve eşikli alarmları üretir (log/DB'ye yazmadan)."""
+    n = config.ALARM_MIN_FLOWS if n is None else n
+    a1, an = raise_alarms(summary, "-", min_flows=1), raise_alarms(summary, "-", min_flows=n)
+    return {"esiksiz_kritik": sum(a["seviye"] == "CRITICAL" for a in a1),
+            "esiksiz_alarmlar": _fmt(a1), "esik_N": n,
+            "esikli_kritik": sum(a["seviye"] == "CRITICAL" for a in an),
+            "esikli_incelenmeli": sum(a["dusuk_sayi"] for a in an),
+            "esikli_alarmlar": _fmt(an)}
 
 
 def main():
@@ -43,7 +61,8 @@ def main():
             times, row = [], {"dosya": name}
             for _ in range(REPEATS):
                 try:
-                    res, _, alarms = run_analysis(predictor, path, name, db, logger)
+                    res, _, alarms = run_analysis(predictor, path, name, db, logger,
+                                                  min_flows=config.ALARM_MIN_FLOWS)
                 except InferenceError as e:
                     row.update(durum="uyarı", mesaj=str(e))
                     break
@@ -58,6 +77,7 @@ def main():
                     kritik_alarm=sum(a["seviye"] == "CRITICAL" for a in alarms),
                     alarmlar="; ".join(f"{a['sinif']} ({a['adet']}, {a['seviye']})"
                                        for a in alarms),
+                    **compare_thresholds(res.class_summary),
                     sure_ilk_sn=times[0], sure_medyan_sn=statistics.median(times),
                     satir_basi_ms=statistics.median(times) * 1000 / res.total_rows,
                     atlama_nedenleri=json.dumps(res.skipped_reasons, ensure_ascii=False))

@@ -71,7 +71,7 @@ def show_result(state):
     c1.metric("Analiz edilen akış", tr_int(res.analyzed_rows))
     c2.metric("Saldırı tahmini", tr_int(res.attack_rows),
               help="Benign dışındaki bir sınıfa atanan akış sayısı")
-    c2.caption(f"Analiz edilen akışların {pct(res.attack_rows / res.analyzed_rows)}'i")
+    c2.caption(f"Oran: {pct(res.attack_rows / res.analyzed_rows)}")
     c3.metric("Atlanan satır", tr_int(res.skipped_rows))
     c4.metric("Analiz süresi", f"{res.duration_s:.2f} sn".replace(".", ","))
     if res.skipped_rows:
@@ -79,17 +79,22 @@ def show_result(state):
         st.info(f"{tr_int(res.skipped_rows)} satır bozuk olduğu için analiz dışı bırakıldı "
                 f"({reasons}).", icon="ℹ️")
 
-    # Alarmlar: kritikler kırmızı, PortScan sarı
+    # Alarmlar: kritikler kırmızı, PortScan sarı; eşiğin altındaki sınıflar sarı "incelenmeli".
+    # Eşik yalnızca alarm seviyesini etkiler: tablo ve grafik her akışı olduğu gibi gösterir.
     if alarms:
         for a in alarms:
             text = (f"**{a['sinif']}** — {tr_int(a['adet'])} akış "
                     f"(ortalama güven {pct(a['ortalama_guven'])})")
             if a["seviye"] == "CRITICAL":
                 st.error(f"KRİTİK SALDIRI: {text}", icon="🚨")
+            elif a["dusuk_sayi"]:
+                st.warning(f"Düşük sayıda şüpheli akış, incelenmeli: {text}. Alarm eşiği "
+                           f"{a['esik']} akış olduğu için kritik alarm verilmedi.", icon="🔎")
             else:
                 st.warning(f"UYARI: {text}", icon="⚠️")
-        st.caption(f"Alarmlar logs/security.log dosyasına ve veritabanına (analiz #{state['id']}) "
-                   "kaydedildi.")
+        st.caption(f"Alarm eşiği: en az {state['min_flows']} akış (analiz anında uygulandı). "
+                   f"Alarmlar logs/security.log dosyasına ve veritabanına (analiz "
+                   f"#{state['id']}) kaydedildi.")
     else:
         st.success("Saldırı tespit edilmedi: tüm akışlar Benign olarak sınıflandı.", icon="✅")
 
@@ -144,7 +149,7 @@ def show_result(state):
         st.caption(note)
 
 
-def page_analysis(predictor, logger):
+def page_analysis(predictor, logger, min_flows):
     st.title("Ağ Trafiği Analizi")
     st.caption(f"Model: {predictor.version} · {len(predictor.features)} öznitelik · "
                f"Botnet karar eşiği {predictor.botnet_threshold}")
@@ -152,9 +157,10 @@ def page_analysis(predictor, logger):
     if st.button("Analiz et", type="primary", disabled=up is None):
         with st.spinner("Analiz ediliyor..."):
             try:
-                res, aid, alarms = run_analysis(predictor, up, up.name, config.DB_PATH, logger)
+                res, aid, alarms = run_analysis(predictor, up, up.name, config.DB_PATH, logger,
+                                                min_flows=min_flows)
                 st.session_state["son"] = {"result": res, "id": aid, "alarms": alarms,
-                                           "file_name": up.name}
+                                           "file_name": up.name, "min_flows": min_flows}
             except InferenceError as e:
                 st.session_state.pop("son", None)
                 st.warning(f"Dosya analiz edilemedi: {e}", icon="⚠️")
@@ -180,12 +186,14 @@ def page_history():
                                     "sure_sn": st.column_config.NumberColumn("Süre (sn)",
                                                                              format="%.2f"),
                                     "model_surumu": "Model", "alarm_sayisi": "Alarm",
+                                    "kritik_alarm": "Kritik alarm",
                                     "saldiri_akisi": "Saldırı akışı"})
         choice = st.selectbox("Ayrıntısı gösterilecek analiz", analyses["id"],
                               format_func=lambda i: f"#{i} — " + analyses.set_index("id")
                               .loc[i, "dosya_adi"])
         labels = {"sinif": "Sınıf", "adet": "Akış", "seviye": "Seviye", "zaman": "Zaman",
                   "dosya_adi": "Dosya", "analiz_id": "Analiz", "id": "No",
+                  "dusuk_sayi": st.column_config.CheckboxColumn("Eşik altı"), "esik": "Eşik",
                   "ortalama_guven": st.column_config.NumberColumn("Ort. güven", format="%.3f")}
         a, b = st.columns(2)
         with a:
@@ -198,7 +206,8 @@ def page_history():
             if al.empty:
                 st.caption("Bu analizde alarm yok.")
             else:
-                st.dataframe(al[["sinif", "adet", "seviye", "zaman"]], hide_index=True,
+                st.dataframe(al[["sinif", "adet", "seviye", "dusuk_sayi", "esik", "zaman"]],
+                             hide_index=True,
                              use_container_width=True, column_config=labels)
         st.markdown("**Tüm alarmlar (son 500)**")
         st.dataframe(database.list_alarms(conn), hide_index=True, use_container_width=True,
@@ -209,14 +218,21 @@ def page_history():
 
 def main():
     page = st.sidebar.radio("Sayfa", ["Analiz", "Geçmiş Analizler"])
-    st.sidebar.caption("23. Grup · Fırat Üniversitesi Mühendislik Tasarımı")
+    min_flows = st.sidebar.number_input(
+        "Alarm eşiği (en az kaç akış)", min_value=1, max_value=100_000,
+        value=config.ALARM_MIN_FLOWS, step=1,
+        help="Bir saldırı sınıfından bu sayıdan az akış bulunursa kritik alarm yerine "
+             "'düşük sayıda şüpheli akış, incelenmeli' uyarısı verilir. Tahminleri "
+             "değiştirmez. Varsayılan değer doğrulama kümesinde seçildi.")
+    # "23." satır başında Markdown'da numaralı liste sanılır; ters bölü ile kaçırılır
+    st.sidebar.caption("23\\. Grup · Fırat Üniversitesi Mühendislik Tasarımı")
     try:
         predictor = load_predictor()
     except InferenceError as e:
         st.error(str(e))
         st.stop()
     if page == "Analiz":
-        page_analysis(predictor, load_logger())
+        page_analysis(predictor, load_logger(), int(min_flows))
     else:
         page_history()
 

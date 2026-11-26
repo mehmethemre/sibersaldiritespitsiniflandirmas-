@@ -48,6 +48,12 @@ MODEL_VERSION = "hafta9-rf-1"
 ALARM_LEVELS = {"DoS/DDoS": "CRITICAL", "Botnet": "CRITICAL", "Web Attack": "CRITICAL",
                 "Brute Force": "CRITICAL", "PortScan": "WARNING"}
 
+# Alarm eşiği: bir saldırı sınıfından en az bu kadar akış bulunursa sınıfın normal alarm
+# seviyesi verilir; daha azsa WARNING + "düşük sayıda şüpheli akış, incelenmeli".
+# Tahminleri değiştirmez. Değer doğrulama kümesinde seçildi: experiments/alarm_threshold.py
+# (10.000 satırlık normal trafik parçalarının en fazla %5'inde yanlış KRİTİK -> N = 9)
+ALARM_MIN_FLOWS = 9
+
 # CSV'lerde "Fwd Header Length" iki kez bulunur; pandas ikincisini ".1" ekiyle okur.
 # İki sütun birebir aynı olduğu için kopya yüklemede silinir.
 DUPLICATE_COLUMNS = ["Fwd Header Length.1"]

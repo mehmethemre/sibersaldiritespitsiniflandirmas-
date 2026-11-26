@@ -84,6 +84,11 @@ Tarayıcıda `http://localhost:8501` açılır.
 * **Geçmiş Analizler** sayfası: önceki analizler ve alarmlar (`data/analizler.db`).
 * Alarmlar `logs/security.log` dosyasına da yazılır (sınıf başına tek satır; DoS/DDoS, Botnet,
   Web Attack, Brute Force -> CRITICAL, PortScan -> WARNING).
+* **Alarm eşiği:** bir saldırı sınıfından en az N akış (varsayılan 9) bulunursa alarm verilir;
+  daha azsa sarı "düşük sayıda şüpheli akış, incelenmeli" bilgisi gösterilir ve günlüğe WARNING
+  yazılır. Tahminler değişmez. N kenar çubuğundan değiştirilebilir; varsayılan değer
+  `src/config.py::ALARM_MIN_FLOWS`'tadır ve doğrulama kümesinde seçilmiştir
+  (`python experiments/alarm_threshold.py`, sonuçlar `reports/hafta9/alarm_esigi.md`).
 * Yükleme sınırı 500 MB'tır (`.streamlit/config.toml`).
 
 ### Demo dosyaları
