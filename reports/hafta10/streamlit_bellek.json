@@ -1,0 +1,17 @@
+{
+  "aciklama": "Streamlit sürecinin (streamlit run app.py) bellek ölçümü. Her dosya için Streamlit yeniden başlatıldı (taze süreç), dosya tarayıcıda arayüzün yükleme alanına verildi ve 'Analiz et' ile analiz edildi. Bellek psutil ile sürecin peak_wset (tepe çalışma kümesi = peak RSS) değerinden okundu. Her dosya bir kez ölçüldü. Ölçüm sırasında başka ağır iş çalışmıyordu.",
+  "tarih": "2026-11-26",
+  "olcumler": [
+    {"durum": "taze süreç, sayfa açılmadan önce", "rss_mb": 202.6, "tepe_mb": 202.6},
+    {"durum": "perf_100000.csv (100.000 satır, 38,6 MB) analizi sonrası", "rss_mb": 341.5,
+     "tepe_mb": 508.7, "arayuzde_gosterilen_analiz_suresi_sn": 2.19},
+    {"durum": "perf_tum.csv (439.792 satır, 169,6 MB) analizi sonrası", "rss_mb": 505.5,
+     "tepe_mb": 1290.4, "arayuzde_gosterilen_analiz_suresi_sn": 6.95}
+  ],
+  "ilk_deneme_ayni_surecte": {
+    "not": "İlk denemede iki dosya aynı süreçte arka arkaya analiz edildi ve arka planda eşik deneyi çalışıyordu: 100.000 satır sonrası tepe 512,9 MB, tüm test kümesi sonrası tepe 1.314,2 MB (arayüz süresi 17,19 sn, CPU paylaşımı nedeniyle kullanılmaz)."
+  },
+  "yukleme_siniri": {"server.maxUploadSize_mb": 500, "en_buyuk_dosya_mb": 169.6, "yeterli": true,
+                     "not": "169,6 MB'lık dosya arayüzde sınır hatası vermeden yüklendi ve analiz edildi."},
+  "not_veritabani": "Bu analizler uygulamanın gerçek veritabanına (data/analizler.db, analiz #14-#17) ve logs/security.log dosyasına yazıldı."
+}

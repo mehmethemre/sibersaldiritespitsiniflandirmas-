@@ -19,7 +19,8 @@ Analizler geçici veritabanı ve geçici log dosyasına yazılır.
 Kullanım:
     python scripts/measure_memory.py --prepare     # ölçüm dosyalarını üret (bir kez)
     python scripts/measure_memory.py               # ölçüm (varsayılan 3 tekrar)
-Çıktılar: reports/hafta10/bellek_olcum.csv (ham), bellek_ozet.csv, ortam.json
+    python scripts/measure_memory.py --latency     # N2: tek kayıt predict() medyanı
+Çıktılar: reports/hafta10/bellek_olcum.csv (ham), bellek_ozet.csv, ortam.json, gecikme.json
 """
 import argparse
 import json
@@ -99,6 +100,26 @@ def worker(case):
     print(json.dumps(r))
 
 
+def latency(repeats):
+    """N2 tanımı: tek kayıtlık predict() medyanı (n_jobs=1, src/evaluate.py::single_latency_ms).
+
+    Kayıtlar test kümesinden örneklenen 10.000 satırlık dosyadan gelir; her tekrar 1.000 çağrı.
+    """
+    from src.evaluate import single_latency_ms
+    from src.inference import Predictor
+    p = Predictor()
+    X, _, _ = p.prepare(p.read_csv(perf_file(10_000)))
+    runs = [single_latency_ms(p.model, X) for _ in range(repeats)]
+    out = {"aciklama": "Tek kayıtlık model.predict() süresi (ms), n_jobs=1, her tekrarda 1.000 "
+                       "çağrının medyanı ve %95'liği; CSV okuma ve ölçekleme hariç.",
+           "tekrarlar": [{"medyan_ms": m, "p95_ms": q} for m, q in runs],
+           "medyan_ms_ort": sum(m for m, _ in runs) / repeats,
+           "medyan_ms_en_kotu": max(m for m, _ in runs)}
+    (OUT_DIR / "gecikme.json").write_text(json.dumps(out, ensure_ascii=False, indent=2),
+                                          encoding="utf-8")
+    print(json.dumps(out, ensure_ascii=False, indent=2))
+
+
 def environment():
     import joblib
     import psutil
@@ -118,9 +139,12 @@ def main(argv=None):
     ap.add_argument("--prepare", action="store_true")
     ap.add_argument("--worker")
     ap.add_argument("--repeats", type=int, default=REPEATS)
+    ap.add_argument("--latency", action="store_true", help="N2: tek kayıt predict() medyanı")
     args = ap.parse_args(argv)
     if args.prepare:
         return prepare()
+    if args.latency:
+        return latency(args.repeats)
     if args.worker:
         return worker(args.worker)
 

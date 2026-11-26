@@ -1,0 +1,19 @@
+{
+  "aciklama": "Tek kayıtlık model.predict() süresi (ms), n_jobs=1, her tekrarda 1.000 çağrının medyanı ve %95'liği; CSV okuma ve ölçekleme hariç.",
+  "tekrarlar": [
+    {
+      "medyan_ms": 5.095849999634083,
+      "p95_ms": 8.540989999710291
+    },
+    {
+      "medyan_ms": 4.190000001472072,
+      "p95_ms": 8.50174499992135
+    },
+    {
+      "medyan_ms": 4.14219999947818,
+      "p95_ms": 8.525134997398709
+    }
+  ],
+  "medyan_ms_ort": 4.476016666861445,
+  "medyan_ms_en_kotu": 5.095849999634083
+}
