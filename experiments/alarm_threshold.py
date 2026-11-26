@@ -14,7 +14,7 @@ Yöntem: doğrulama kümesinden rastgele "dosyalar" (parçalar) çekilir.
   b) Doğal dağılımlı parçalar (doğrulamadaki sınıf oranlarıyla): her N için
      - yanlış KRİTİK: sınıf parçada hiç yokken N veya daha fazla akışa o sınıf denmiş
      - düşürülen gerçek saldırı: sınıf parçada gerçekten var ama N'den az akış tespit edilmiş
-       (alarm gizlenmez, sarı "incelenmeli" bilgisine düşer)
+       (alarm gizlenmez, "incelenmeli" bilgisine düşer)
 Satırlar rastgele örneklenir; gerçek trafik dosyaları zamana göre ardışıktır, bu bir yaklaşımdır.
 
 Seçim kuralı (sonuçlara bakmadan önce belirlendi): yalnızca Benign içeren 10.000 satırlık
@@ -204,7 +204,7 @@ def write_report(path, s, benign, natural, dist):
                  f"{tr_int(r.en_kalabalik_sinif_max)} |")
     L.append("\n## Doğal dağılımlı parçalar (gerçek saldırılar dahil)\n")
     L.append("Yanlış KRİTİK: parçada olmayan bir sınıf için alarm. Düşürülen: parçada gerçekten "
-             "bulunan bir saldırı sınıfının N'den az akışla tespit edilip sarı bilgiye düşmesi "
+             "bulunan bir saldırı sınıfının N'den az akışla tespit edilip \"incelenmeli\" bilgisine düşmesi "
              "(gizlenmez).\n")
     L.append("| N | " + " | ".join(f"{tr_int(z)}: yanlış KRİTİK / düşürülen" for z in sizes) + " |")
     L.append("| --- |" + " --- |" * len(sizes))

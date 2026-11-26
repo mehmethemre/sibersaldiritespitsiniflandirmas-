@@ -31,7 +31,7 @@ Benign parçalarda yanlış saldırı akışı sayısı (en kalabalık KRİTİK 
 
 ## Doğal dağılımlı parçalar (gerçek saldırılar dahil)
 
-Yanlış KRİTİK: parçada olmayan bir sınıf için alarm. Düşürülen: parçada gerçekten bulunan bir saldırı sınıfının N'den az akışla tespit edilip sarı bilgiye düşmesi (gizlenmez).
+Yanlış KRİTİK: parçada olmayan bir sınıf için alarm. Düşürülen: parçada gerçekten bulunan bir saldırı sınıfının N'den az akışla tespit edilip "incelenmeli" bilgisine düşmesi (gizlenmez).
 
 | N | 1.000: yanlış KRİTİK / düşürülen | 3.000: yanlış KRİTİK / düşürülen | 10.000: yanlış KRİTİK / düşürülen | 100.000: yanlış KRİTİK / düşürülen |
 | --- | --- | --- | --- | --- |
