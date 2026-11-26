@@ -13,5 +13,5 @@
   },
   "yukleme_siniri": {"server.maxUploadSize_mb": 500, "en_buyuk_dosya_mb": 169.6, "yeterli": true,
                      "not": "169,6 MB'lık dosya arayüzde sınır hatası vermeden yüklendi ve analiz edildi."},
-  "not_veritabani": "Bu analizler uygulamanın gerçek veritabanına (data/analizler.db, analiz #14-#17) ve logs/security.log dosyasına yazıldı."
+  "not_veritabani": "Bu analizler uygulamanın gerçek veritabanına (data/analizler.db, analiz #14-#17) ve logs/security.log dosyasına yazıldı; ölçümden sonra silindi (yedek: data/yedek_hafta10/)."
 }

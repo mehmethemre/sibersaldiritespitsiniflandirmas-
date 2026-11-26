@@ -89,8 +89,10 @@ N5 sade arayüz · N6 Python 3.10+, Windows/Linux.
   eşik veriyor; beklenen yanlış alarm + dalgalanma payı (Poisson üst sınırı) düşünülebilir.
 
 ## Güncel durum (26.11.2026)
-- 10. hafta tamamlandı, commit'lendi, **push edilmedi** (push kullanıcı onayıyla). 9. hafta son push `b658d54`.
-- Geliştirme araçları kuruldu: superpowers, ponytail (bu projede kapalı), andrej-karpathy-skills, find-skills, graphify, caveman, claude-mem.
+- 10. hafta tamamlandı ve GitHub'a push edildi (`303dd00`). Sıradaki iş: 11. hafta (yol haritası).
+- Arayüz ölçüm analizleri (#14–#17, perf_*.csv) veritabanından ve `logs/security.log`'dan silindi;
+  silmeden önceki yedek `data/yedek_hafta10/` (gitignore'da). Geçmişte yalnızca demo analizleri var.
+- Geliştirme araçları kuruldu: superpowers, ponytail (bu projede kapalı; 10. hafta oturumunda kullanıcı komutuyla geçici olarak lite modda açıktı), andrej-karpathy-skills, find-skills, graphify, caveman, claude-mem.
 - **caveman bu projede kullanılmaz**: açıklamalı, öğretici cevaplar isteniyor.
 - graphify bilgi grafiği `graphify-out/` altında (424 düğüm, 17 topluluk; `graphify-out/GRAPH_REPORT.md`). Klasör `.gitignore`'da; kod değişince `/graphify . --update` ile yenilenir.
 - graphify kancası yalnızca yerelde: `.claude/settings.local.json` (gitignore'da; ekip arkadaşlarında graphify yok). `graphify claude install` CLAUDE.md'ye yazdığı için kullanılmadı.

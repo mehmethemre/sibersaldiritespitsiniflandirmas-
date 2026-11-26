@@ -294,4 +294,5 @@ yazmadıkları doğrulandı).
   hücreleri ölçülemedi.
 * Streamlit bellek ölçümü her dosya için tek kez yapıldı; arayüzdeki süreler tek ölçümdür.
   Streamlit'te belleğin komut satırına göre fazlalığının nedeni ayrıştırılmadı.
-* Arayüz ölçümleri uygulamanın gerçek veritabanına (analiz #14–#17) ve `logs/security.log`'a yazıldı.
+* Arayüz ölçümleri uygulamanın gerçek veritabanına (analiz #14–#17) ve `logs/security.log`'a
+  yazılmıştı; ölçümden sonra bu kayıtlar silindi (yedek: `data/yedek_hafta10/`, GitHub'a yüklenmez).
