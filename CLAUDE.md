@@ -36,10 +36,12 @@ Sayı uydurma, tahmini değeri ölçülmüş gibi sunma. Sonuç yoksa "[doldurul
   Botnet, değilse kalan en olası sınıf). Eşik kuralı tek yerde: `src/evaluate.py::predict_classes`.
 - Alarm seviyeleri: DoS/DDoS, Botnet, Web Attack, Brute Force → CRITICAL; PortScan → WARNING;
   analiz başına sınıf başına tek log satırı (`src/alarm.py`).
-- Alarm eşiği `ALARM_MIN_FLOWS = 9`: bir sınıftan 9'dan az akış → WARNING + "düşük sayıda
-  şüpheli akış, incelenmeli" (gizlenmez, tahminler değişmez). Doğrulama kümesinde seçildi
-  (`experiments/alarm_threshold.py`): 10.000 satırlık normal dosyaların ≤ %5'inde yanlış KRİTİK.
-  Sınırı: sabit N büyük dosyalarda (≥ 100.000 satır) yetersiz; oran tabanlı eşik ileride düşünülebilir.
+- Alarm eşiği (10. haftadan beri oran tabanlı): sınıfın eşiği = max(`ALARM_MIN_FLOWS` = 9,
+  ceil(`ALARM_RATES[sınıf]` × analiz edilen akış)); eşik altı → WARNING + "düşük sayıda şüpheli
+  akış, incelenmeli" (gizlenmez, tahminler değişmez). Oranlar: DoS/DDoS 0,00044, Botnet 0,00101,
+  PortScan 0,0001, Brute Force 0, Web Attack 0. Kural tek yerde: `src/alarm.py::alarm_threshold`.
+  Doğrulama kümesinde önceden yazılmış ölçütle seçildi (`experiments/ratio_threshold.py`,
+  `reports/hafta10/esik_secim_olcutu.md`). N_min 9. haftada seçilmişti (`experiments/alarm_threshold.py`).
 - Gecikme: tek kayıtlık predict() medyanı (n_jobs=1) ayrı, toplu akış başı ortalama ayrı raporlanır.
 - Metrikler `classification_report` çıktısından alınır; Macro F1 de raporlanır.
 
@@ -49,7 +51,7 @@ Sayı uydurma, tahmini değeri ölçülmüş gibi sunma. Sonuç yoksa "[doldurul
 | 7 | Kod altyapısı, sızıntısız pipeline, DT/RF gerçek sonuçlar (mevcut kod) |
 | 8 | Çapraz doğrulamalı hiperparametre arama (SMOTE imblearn Pipeline içinde, gerekirse örneklemle) + XGBoost/LightGBM karşılaştırması |
 | 9 | `src/inference.py` + Streamlit `app.py` (CSV yükle, tahmin + güven skoru, dağılım grafiği, kritik saldırıda st.error) + `logging` ile `security.log` (RotatingFileHandler, CRITICAL; alarmları dosya bazında özetle) + SQLite geçmiş + demo dosyaları — **tamamlandı** |
-| 10 | Test: N2 (<50 ms tek kayıt, 10.000 satır <5 sn), N3 (RAM <1,5 GB), N4 (bozuk/eksik sütunlu CSV'de çökmeme), demo CSV'leri (test kümesinden: normal, ddos, karma) üreten betik |
+| 10 | Test: N2 (<50 ms tek kayıt, 10.000 satır <5 sn), N3 (RAM <1,5 GB), N4 (bozuk/eksik sütunlu CSV'de çökmeme), oran tabanlı alarm eşiği, uçtan uca testler — **tamamlandı** (`reports/hafta10_sonuclar.md`) |
 | 11 | Öznitelik önem analizi, arayüz iyileştirme, README; isteğe bağlı VirtualBox laboratuvarında nmap + CICFlowMeter canlı demo denemesi |
 | 12 | Dönem sonu teknik raporu |
 | 13 | Final sunumu ve canlı demo |
@@ -68,8 +70,26 @@ N5 sade arayüz · N6 Python 3.10+, Windows/Linux.
 - Commit/push yalnızca kullanıcı isteyince.
 - Commit mesajlarına ve PR açıklamalarına "Co-Authored-By: Claude" veya benzeri imza satırı ekleme.
 
+## 10. hafta özeti (26.11.2026; ayrıntı ve tüm sayılar: `reports/hafta10_sonuclar.md`)
+- Ölçüm bilgisayarı: i5-12500H, 31,8 GB RAM, Windows 11 (26300), Python 3.11.9, scikit-learn 1.9.1.
+- N3 sağlandı: tepe bellek en kötü 1.058,3 MB (komut satırı, tüm test kümesi 439.792 satır,
+  `scripts/measure_memory.py`, ayrı süreç × 3 tekrar); Streamlit sürecinde 1.290,4 MB (tek ölçüm).
+  Chunk okuma gerekmedi. Yükleme sınırı 500 MB, en büyük dosya 169,6 MB.
+- N2 sağlandı: tek kayıt predict() medyanı ort. 4,48 ms (en kötü 5,10 ms); 10.000 satır 0,169 sn.
+  Tek satırlık CSV uçtan uca 56 ms (okuma dahil; N2 tanımı değil).
+- Oran tabanlı eşik: ölçüt deneyden önce commit edildi (her boyutta yanlış KRİTİK ≤ %5; S1 ortalama
+  kaçırma en düşük). Sınıf bazında oran tek orana göre kaçırmayı 10,71 puan düşürdü → seçildi.
+  Test (bir kez): KRİTİK yanlış alarm her boyutta ≤ %5; **PortScan 100.000 satırda yanlış UYARI %13,6**
+  (doğrulamada %3,1). Bedel: büyük dosyada az sayıda DoS/Botnet akışı incelenmeliye düşer; doğal
+  orandaki Botnet büyük dosyalarda KRİTİK almaz (tüm test kümesi: 419 tespit / eşik 445).
+  Demo dosyalarında alarmlar 9. haftayla birebir aynı.
+- N4: CSV olmayan dosya (zip/xlsx, resim, NUL), noktalı virgüllü ve UTF-16 CSV için yanıltıcı mesajlar
+  düzeltildi. Testler: 55 → 80 (27,84–28,59 sn), `tests/test_e2e.py` (uçtan uca + AppTest) eklendi.
+- Kalan sınır / 11. hafta için aday: `max(N_min, oran × n)` biçimi büyük dosyada gereğinden yüksek
+  eşik veriyor; beklenen yanlış alarm + dalgalanma payı (Poisson üst sınırı) düşünülebilir.
+
 ## Güncel durum (26.11.2026)
-- 9. hafta + alarm eşiği (N=9) + arayüz kart ayrımı (kırmızı KRİTİK / turuncu UYARI / gri-mavi incelenmeli) tamamlandı ve GitHub'a push edildi (son commit `b658d54`). Sıradaki iş: 10. hafta testleri (yol haritası).
+- 10. hafta tamamlandı, commit'lendi, **push edilmedi** (push kullanıcı onayıyla). 9. hafta son push `b658d54`.
 - Geliştirme araçları kuruldu: superpowers, ponytail (bu projede kapalı), andrej-karpathy-skills, find-skills, graphify, caveman, claude-mem.
 - **caveman bu projede kullanılmaz**: açıklamalı, öğretici cevaplar isteniyor.
 - graphify bilgi grafiği `graphify-out/` altında (424 düğüm, 17 topluluk; `graphify-out/GRAPH_REPORT.md`). Klasör `.gitignore`'da; kod değişince `/graphify . --update` ile yenilenir.
