@@ -1,0 +1,15 @@
+{
+  "isletim_sistemi": "Windows 10",
+  "islemci": "12th Gen Intel(R) Core(TM) i5-12500H",
+  "mantiksal_cekirdek": 16,
+  "ram_gb": 31.8,
+  "python": "3.11.9",
+  "pandas": "3.1.1",
+  "numpy": "2.4.6",
+  "scikit_learn": "1.9.1",
+  "joblib": "1.6.0",
+  "streamlit": "1.67.0",
+  "psutil": "7.2.2",
+  "platform": "Windows-10-10.0.26300-SP0",
+  "fiziksel_cekirdek": 12
+}

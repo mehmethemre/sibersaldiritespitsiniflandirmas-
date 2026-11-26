@@ -23,3 +23,6 @@ logs/
 
 # graphify çıktıları (bilgi grafiği, yerelde yeniden üretilir)
 graphify-out/
+
+# 10. hafta: performans ölçüm dosyaları (test kümesinden örneklenir, büyük)
+data/perf/
