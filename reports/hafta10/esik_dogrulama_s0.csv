@@ -1,0 +1,7 @@
+n,esik_kritik_eski,esik_portscan_eski,yanlis_kritik_eski,yanlis_uyari_portscan_eski,esik_kritik_yeni,esik_portscan_yeni,yanlis_kritik_yeni,yanlis_uyari_portscan_yeni
+1000,9,9,0.0,0.0,9,9,0.0,0.0
+3000,9,9,0.0,0.0,9,9,0.0,0.0
+10000,9,9,0.0335,0.0,11,9,0.006,0.0
+30000,9,9,0.939,0.0,31,9,0.0075,0.0
+100000,9,9,1.0,0.0825,101,10,0.0,0.031
+250000,9,9,1.0,0.999,253,25,0.0,0.0

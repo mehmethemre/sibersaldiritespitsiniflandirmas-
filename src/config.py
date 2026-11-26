@@ -54,6 +54,15 @@ ALARM_LEVELS = {"DoS/DDoS": "CRITICAL", "Botnet": "CRITICAL", "Web Attack": "CRI
 # (10.000 satırlık normal trafik parçalarının en fazla %5'inde yanlış KRİTİK -> N = 9)
 ALARM_MIN_FLOWS = 9
 
+# 10. hafta: oran tabanlı alarm eşiği. Sınıfın eşiği = max(ALARM_MIN_FLOWS, ceil(oran × n));
+# n = analiz edilen akış sayısı. Listede olmayan sınıfın oranı 0 (yalnızca sabit eşik).
+# Doğrulama kümesinde seçildi (experiments/ratio_threshold.py; ölçüt:
+# reports/hafta10/esik_secim_olcutu.md): sınıf bazında oran, tek orana göre S1 ortalama
+# kaçırmayı 10,7 puan düşürdü. Brute Force ve Web Attack doğrulamada hiç yanlış alarm
+# üretmediği için oranları 0 (sabit 9).
+ALARM_RATES = {"DoS/DDoS": 0.00044, "Botnet": 0.00101, "Brute Force": 0.0,
+               "Web Attack": 0.0, "PortScan": 0.0001}
+
 # CSV'lerde "Fwd Header Length" iki kez bulunur; pandas ikincisini ".1" ekiyle okur.
 # İki sütun birebir aynı olduğu için kopya yüklemede silinir.
 DUPLICATE_COLUMNS = ["Fwd Header Length.1"]

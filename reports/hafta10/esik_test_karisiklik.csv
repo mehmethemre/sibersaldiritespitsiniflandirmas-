@@ -1,0 +1,7 @@
+gercek\tahmin,Benign,DoS/DDoS,PortScan,Brute Force,Web Attack,Botnet
+Benign,372259,63,26,1,0,157
+DoS/DDoS,216,64124,7,0,2,0
+PortScan,4,3,383,0,1,0
+Brute Force,52,0,0,1778,0,0
+Web Attack,31,1,0,0,397,0
+Botnet,25,0,0,0,0,262

@@ -1,0 +1,75 @@
+{
+  "kip": "dogrulama",
+  "secilen": {
+    "N_min": 9,
+    "oranlar": {
+      "DoS/DDoS": 0.00044,
+      "Brute Force": 0.0,
+      "Web Attack": 0.0,
+      "Botnet": 0.00101,
+      "PortScan": 0.0001
+    }
+  },
+  "tek_oran": {
+    "N_min": 9,
+    "oran_kritik": 0.00061,
+    "amac_kritik": 0.234118055556,
+    "uygun_aday": 6836,
+    "oran_portscan": 0.0001,
+    "amac_portscan": 0.034722222222,
+    "uygun_aday_portscan": 191
+  },
+  "sinif_bazinda": {
+    "oranlar": {
+      "DoS/DDoS": 0.00044,
+      "Brute Force": 0.0,
+      "Web Attack": 0.0,
+      "Botnet": 0.00101
+    },
+    "toplam_yanlis_kritik_uygun": true,
+    "amac": 0.1269722222222222,
+    "iyilesme_puan": 10.714583333377778,
+    "secildi": true
+  },
+  "izgara": {
+    "N_min": [
+      1,
+      50
+    ],
+    "oran": [
+      0.0,
+      0.002
+    ],
+    "adim": 1e-05
+  },
+  "alt_egitim_satir": 1407332,
+  "parca_sayisi": 2000,
+  "tohum": 42,
+  "boyutlar": [
+    1000,
+    3000,
+    10000,
+    30000,
+    100000,
+    250000
+  ],
+  "k": [
+    10,
+    50,
+    200
+  ],
+  "oran_senaryolari": [
+    0.001,
+    0.01
+  ],
+  "havuzlar": {
+    "Benign": 298004,
+    "DoS/DDoS": 51479,
+    "PortScan": 313,
+    "Brute Force": 1464,
+    "Web Attack": 343,
+    "Botnet": 230
+  },
+  "ornekleme_orani": null,
+  "sure_dk": 2.359607375000026
+}

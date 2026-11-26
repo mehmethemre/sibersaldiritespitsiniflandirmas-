@@ -1,0 +1,43 @@
+{
+  "kip": "test",
+  "kural": {
+    "N_min": 9,
+    "oranlar": {
+      "DoS/DDoS": 0.00044,
+      "Brute Force": 0.0,
+      "Web Attack": 0.0,
+      "Botnet": 0.00101,
+      "PortScan": 0.0001
+    }
+  },
+  "model_surumu": "hafta9-rf-1",
+  "parca_sayisi": 2000,
+  "tohum": 42,
+  "boyutlar": [
+    1000,
+    3000,
+    10000,
+    30000,
+    100000,
+    250000
+  ],
+  "k": [
+    10,
+    50,
+    200
+  ],
+  "oran_senaryolari": [
+    0.001,
+    0.01
+  ],
+  "havuzlar": {
+    "Benign": 372506,
+    "DoS/DDoS": 64349,
+    "PortScan": 391,
+    "Brute Force": 1830,
+    "Web Attack": 429,
+    "Botnet": 287
+  },
+  "ornekleme_orani": null,
+  "sure_dk": 0.6599281066666662
+}

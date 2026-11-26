@@ -22,7 +22,8 @@ def _close(logger):
 def test_one_line_per_attack_class_with_levels(tmp_path):
     logger = get_security_logger(tmp_path)
     # eşiksiz (N=1): sınıf bazındaki seviye kuralı sınanır
-    alarms = raise_alarms(SUMMARY, "demo.csv", analiz_id=7, logger=logger, min_flows=1)
+    alarms = raise_alarms(SUMMARY, "demo.csv", analiz_id=7, logger=logger, min_flows=1,
+                          rates={})
     _close(logger)
     lines = (tmp_path / "security.log").read_text(encoding="utf-8").splitlines()
     assert len(lines) == 3                              # Benign alarm üretmez
@@ -101,4 +102,31 @@ def test_threshold_downgrades_but_never_hides(tmp_path):
     assert rows.loc["Botnet", "dusuk_sayi"] == 1 and rows.loc["Botnet", "esik"] == 10
     assert rows.loc["DoS/DDoS", "dusuk_sayi"] == 0
     assert database.list_analyses(conn).loc[0, "kritik_alarm"] == 1
+    conn.close()
+
+
+def test_ratio_threshold_scales_with_file_size(tmp_path):
+    """10. hafta: eşik = max(N_min, ceil(oran × n)); n = özetteki toplam akış."""
+    from src.alarm import card_type
+    big = pd.DataFrame({"sinif": ["Benign", "DoS/DDoS", "Botnet", "PortScan"],
+                        "adet": [99_800, 60, 120, 20], "ortalama_guven": [0.99, 0.9, 0.8, 0.9]})
+    rates = {"DoS/DDoS": 0.00044, "Botnet": 0.00101, "PortScan": 0.0001}
+    logger = get_security_logger(tmp_path)
+    conn = database.connect(":memory:")
+    aid = database.save_analysis(conn, "buyuk.csv", 100_000, 0, 1.0, "v1")
+    alarms = raise_alarms(big, "buyuk.csv", aid, conn, logger, min_flows=9, rates=rates)
+    _close(logger)
+    by = {a["sinif"]: a for a in alarms}
+    assert by["DoS/DDoS"]["esik"] == 44 and card_type(by["DoS/DDoS"]) == "kritik"     # 60 >= 44
+    assert by["Botnet"]["esik"] == 101 and card_type(by["Botnet"]) == "kritik"        # 120 >= 101
+    assert by["PortScan"]["esik"] == 10 and card_type(by["PortScan"]) == "uyari"      # 20 >= 10
+    rows = database.list_alarms(conn, aid).set_index("sinif")
+    assert rows["esik"].to_dict() == {"DoS/DDoS": 44, "Botnet": 101, "PortScan": 10}
+    lines = (tmp_path / "security.log").read_text(encoding="utf-8").splitlines()
+    assert all(l.endswith(f" esik={by[c]['esik']}") for c in by for l in lines if f"sinif={c} " in l)
+    # aynı sayılar 10 kat küçük olmayan bir dosyada: 1.000 satırda eşik N_min'e iner
+    small = big.assign(adet=[980, 5, 10, 5])
+    kinds = {a["sinif"]: (a["esik"], card_type(a)) for a in raise_alarms(small, "k.csv", rates=rates)}
+    assert kinds == {"DoS/DDoS": (9, "incelenmeli"), "Botnet": (9, "kritik"),
+                     "PortScan": (9, "incelenmeli")}
     conn.close()
