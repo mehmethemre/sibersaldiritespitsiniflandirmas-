@@ -1,0 +1,45 @@
+{
+  "demo_normal.csv": {
+    "Benign": 3000
+  },
+  "demo_ddos.csv": {
+    "DoS/DDoS": 2400,
+    "Benign": 600
+  },
+  "demo_portscan.csv": {
+    "Benign": 1600,
+    "PortScan": 391
+  },
+  "demo_karma.csv": {
+    "Benign": 2000,
+    "DoS/DDoS": 800,
+    "Brute Force": 400,
+    "Web Attack": 200,
+    "Botnet": 200,
+    "PortScan": 200
+  },
+  "demo_10000_satir.csv": {
+    "Benign": 8483,
+    "DoS/DDoS": 1462,
+    "Brute Force": 31,
+    "Web Attack": 11,
+    "PortScan": 8,
+    "Botnet": 5
+  },
+  "demo_bozuk.csv": {
+    "satir": 500,
+    "bozulan_satir": {
+      "metin": 20,
+      "inf": 15,
+      "bos": 10
+    }
+  },
+  "demo_eksik_sutun.csv": {
+    "satir": 500,
+    "silinen_sutunlar": [
+      "Flow Duration",
+      "Bwd IAT Total",
+      "Fwd IAT Max"
+    ]
+  }
+}

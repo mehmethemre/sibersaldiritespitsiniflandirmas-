@@ -1,0 +1,10 @@
+[server]
+# Yükleme sınırı (MB): CICIDS2017 günlük dosyaları 100-300 MB olabiliyor
+maxUploadSize = 500
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+# Ana renk mavi: kırmızı yalnızca kritik alarm kartlarında kullanılsın
+primaryColor = "#3B6FD4"

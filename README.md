@@ -8,15 +8,17 @@ CICIDS2017 ağ akış kayıtlarından normal trafiği (Benign) ve 5 saldırı s�
 
 ## Boru hattı (veri sızıntısı olmadan)
 
-1. 8 CSV birleştirilir, sütun adları düzeltilir, `Destination Port` çıkarılır
+1. 8 CSV birleştirilir, sütun adları düzeltilir, `Destination Port` ve birebir kopya `Fwd Header Length.1` çıkarılır
 2. Kapsam dışı sınıflar (Infiltration, Heartbleed), Inf/NaN satırlar, tekrarlayan satırlar ve sabit sütunlar silinir
 3. Katmanlı %80 eğitim / %20 test bölmesi — **bundan sonra test kümesine dokunulmaz**
-4. Öznitelik seçimi (korelasyon > 0,95 elemesi + ExtraTrees önem sıralaması) — yalnızca eğitim kümesinde
-5. `StandardScaler` — yalnızca eğitim kümesine fit edilir
-6. SMOTE — yalnızca eğitim kümesinde; küçük sınıflar 100.000 örneğe tamamlanır
-7. Decision Tree ve Random Forest eğitimi, test kümesinde değerlendirme
+4. Öznitelikleri aynı ama etiketi farklı satır grupları eğitimden silinir
+5. Öznitelik seçimi: korelasyon > 0,95 elemesi (ExtraTrees adımı 9. haftada kaldırıldı) — yalnızca eğitim kümesinde
+6. `StandardScaler` — yalnızca eğitim kümesine fit edilir
+7. SMOTE — yalnızca eğitim kümesinde; küçük sınıflar 10.000 örneğe tamamlanır
+8. Decision Tree ve Random Forest eğitimi; Random Forest'ta Botnet karar eşiği 0,30; test kümesinde değerlendirme
 
-Tüm ayarlar `src/config.py` dosyasındadır.
+Bu ayarlar 8. haftada doğrulama kümesi üzerinde yapılan deneylerle seçildi
+(`reports/hafta8/rapor_tablolari_hafta8.md`). Tüm ayarlar `src/config.py` dosyasındadır.
 
 ## Windows kurulumu
 
@@ -51,7 +53,7 @@ bağlantısından **MachineLearningCSV.zip** dosyasını indirin. Zip'in içinde
 ```powershell
 python -m pytest -q
 ```
-`4 passed` görmelisiniz.
+Tüm testlerin `passed` olduğunu görmelisiniz.
 
 ### 6. Hızlı deneme (%5 örneklem, birkaç dakika)
 ```powershell
@@ -63,27 +65,69 @@ Bu yalnızca her şeyin çalıştığını görmek içindir; **bu sonuçlar rapo
 ```powershell
 python run_pipeline.py
 ```
-32 GB RAM'li bir bilgisayarda yaklaşık 15–45 dakika sürmesi beklenir (işlemciye bağlı).
-Çalışırken bilgisayarı uyku moduna almayın.
+Geliştirme bilgisayarında (i5-12500H, 32 GB RAM) yaklaşık 3,5 dakika sürdü.
+Model ve yardımcı dosyalar `artifacts/` altına yazılır; uygulama bunları kullanır.
+
+## Uygulamayı çalıştırma
+
+Önce modelin eğitilmiş olması gerekir (yukarıdaki 7. adım; `artifacts/random_forest_model.pkl`
+GitHub'da yoktur). Sonra:
+```powershell
+streamlit run app.py
+```
+Tarayıcıda `http://localhost:8501` açılır.
+
+* **Analiz** sayfası: CSV yükleyin, **Analiz et**'e basın. Özet kartları, sınıf dağılımı,
+  güven skorlu ilk 100 tahmin, kritik saldırılar için kırmızı alarm kartları ve tüm tahminleri
+  CSV olarak indirme düğmesi gösterilir. Dosyada `Label` sütunu varsa tahminler gerçek
+  etiketlerle de karşılaştırılır.
+* **Geçmiş Analizler** sayfası: önceki analizler ve alarmlar (`data/analizler.db`).
+* Alarmlar `logs/security.log` dosyasına da yazılır (sınıf başına tek satır; DoS/DDoS, Botnet,
+  Web Attack, Brute Force -> CRITICAL, PortScan -> WARNING).
+* Yükleme sınırı 500 MB'tır (`.streamlit/config.toml`).
+
+### Demo dosyaları
+
+`demo/` klasöründeki dosyalar test kümesinden (model eğitimde görmedi) üretilmiştir ve gerçek
+etiketi içerir: `demo_normal.csv`, `demo_ddos.csv`, `demo_portscan.csv`, `demo_karma.csv`,
+`demo_10000_satir.csv`; hata yönetimini denemek için `demo_bozuk.csv` (bozuk hücreler) ve
+`demo_eksik_sutun.csv` (eksik sütunlar). Yeniden üretmek için (veri seti gerekir):
+```powershell
+python scripts/make_demo_files.py
+```
+Tüm demo dosyalarını arayüz açmadan analiz edip süreleri ölçmek için:
+```powershell
+python scripts/check_demo_files.py
+```
 
 ## Çıktılar
 
 | Dosya | İçerik |
 | --- | --- |
-| `reports/rapor_tablolari.md` | Haftalık rapora doğrudan aktarılacak, Türkçe biçimli tablolar |
+| `reports/rapor_tablolari.md` | Son eğitimin Türkçe biçimli tabloları |
 | `reports/metrics.json` | Tüm sayısal sonuçlar |
 | `reports/run_log.txt` | Adım adım çalışma günlüğü ve donanım bilgisi |
 | `reports/confusion_matrix_*.png` | Hata matrisi görselleri |
-| `reports/feature_selection.json` | Elenen öznitelikler ve önem skorları |
+| `reports/feature_selection.json` | Korelasyonla elenen öznitelikler |
+| `reports/hafta7/`, `hafta8/`, `hafta9/` | Haftalık sonuçların arşivi |
 | `artifacts/*.pkl`, `features.json`, `label_map.json` | Model, ölçekleyici, öznitelik listesi, sınıf kodları |
+| `artifacts/model_config.json` | Model sürümü, sınıf sırası, Botnet eşiği, eğitim ayarları |
 
 ## Proje yapısı
 
 ```
-run_pipeline.py        # tek komutla tüm süreç
-src/config.py          # yollar, sınıf eşlemesi, hiperparametreler
+run_pipeline.py        # tek komutla eğitim ve değerlendirme
+app.py                 # Streamlit arayüzü
+src/config.py          # yollar, sınıf eşlemesi, hiperparametreler, alarm seviyeleri
 src/data_loader.py     # CSV okuma ve birleştirme
-src/preprocess.py      # temizlik, bölme, öznitelik seçimi, ölçekleme, SMOTE
-src/evaluate.py        # metrikler, hata matrisi, gecikme ölçümü
+src/preprocess.py      # temizlik, bölme, çakışma silme, öznitelik seçimi, ölçekleme, SMOTE
+src/evaluate.py        # metrikler, Botnet eşik kuralı, hata matrisi, gecikme ölçümü
+src/inference.py       # yeni CSV için doğrulama + tahmin + güven skoru
+src/database.py        # SQLite analiz geçmişi
+src/alarm.py           # security.log ve alarm üretimi
+src/service.py         # analiz akışı: tahmin -> veritabanı -> alarm
+experiments/           # 8. hafta deney betikleri
+scripts/               # demo dosyası üretimi ve kontrolü
+demo/                  # test kümesinden demo CSV'leri
 tests/                 # sahte veriyle birim testleri
 ```
