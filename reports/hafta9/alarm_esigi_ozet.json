@@ -1,0 +1,18 @@
+{
+  "secilen_N": 9,
+  "kural": "10.000 satırlık Benign parçalarda yanlış KRİTİK oranı <= %5 olan en küçük N",
+  "dogrulama_satir": 351833,
+  "alt_egitim_satir": 1407332,
+  "benign_dogrulama": 298004,
+  "benign_yanlis_oran": 0.0007181111662930699,
+  "benign_yanlis_sinif": {
+    "DoS/DDoS": 69,
+    "PortScan": 17,
+    "Brute Force": 0,
+    "Web Attack": 0,
+    "Botnet": 128
+  },
+  "parca_sayisi": 2000,
+  "ornekleme_orani": null,
+  "sure_dk": 2.8747224816666708
+}

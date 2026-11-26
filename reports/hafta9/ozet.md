@@ -28,32 +28,57 @@ Not: Decision Tree temel modeli de SMOTE 10.000 ile güçlendi: Macro F1 %93,85 
 
 Demo dosyaları test kümesinden üretildi (`scripts/make_demo_files.py`; model bu satırları eğitimde görmedi). Analiz, arayüzün kullandığı akışla (`src/service.py::run_analysis`) yapıldı (`scripts/check_demo_files.py`). Süre = CSV okuma + doğrulama + tahmin; her dosya 3 kez analiz edildi, medyan verildi. Aynı dosyalar Streamlit arayüzünde tarayıcıdan da yüklenerek denendi; sonuçlar ve alarmlar birebir aynıydı.
 
-| Dosya | Satır | Atlanan | Doğruluk | Macro F1* | Alarm (kritik) | Süre (sn) |
-| --- | --- | --- | --- | --- | --- | --- |
-| demo_normal.csv | 3.000 | 0 | %99,90 | %99,95 | 2 (2) | 0,072 |
-| demo_ddos.csv | 3.000 | 0 | %99,70 | %99,57 | 2 (1) | 0,076 |
-| demo_portscan.csv | 1.991 | 0 | %99,55 | %99,41 | 3 (2) | 0,069 |
-| demo_karma.csv | 3.800 | 0 | %98,42 | %97,63 | 5 (4) | 0,136 |
-| demo_10000_satir.csv | 10.000 | 0 | %99,94 | %97,66 | 5 (4) | 0,229 |
-| demo_bozuk.csv | 500 | 45 | %97,80 | %96,60 | 5 (4) | 0,058 |
-| demo_eksik_sutun.csv | — | — | — | — | — | uyarı: Dosyada modelin ihtiyaç duyduğu 45 sütundan 3 tanesi eksik: Flow Duration, Bwd IAT Total, Fwd IAT Max. CICFlowMeter / CICIDS2017 biçiminde bir CSV yükleyin. |
+| Dosya | Satır | Atlanan | Doğruluk | Macro F1* | Süre (sn) |
+| --- | --- | --- | --- | --- | --- |
+| demo_normal.csv | 3.000 | 0 | %99,90 | %99,95 | 0,075 |
+| demo_ddos.csv | 3.000 | 0 | %99,70 | %99,57 | 0,108 |
+| demo_portscan.csv | 1.991 | 0 | %99,55 | %99,41 | 0,096 |
+| demo_karma.csv | 3.800 | 0 | %98,42 | %97,63 | 0,138 |
+| demo_10000_satir.csv | 10.000 | 0 | %99,94 | %97,66 | 0,259 |
+| demo_bozuk.csv | 500 | 45 | %97,80 | %96,60 | 0,068 |
+| demo_eksik_sutun.csv | — | — | — | — | uyarı: Dosyada modelin ihtiyaç duyduğu 45 sütundan 3 tanesi eksik: Flow Duration, Bwd IAT Total, Fwd IAT Max. CICFlowMeter / CICIDS2017 biçiminde bir CSV yükleyin. |
 
 \* Macro F1, dosyada gerçekte bulunan sınıflar üzerinden hesaplanır.
 
-**10.000 satır:** 0,229 sn (ilk çalıştırma 0,233 sn); N2 hedefi < 5 sn. Arayüzde aynı dosya 0,23 sn gösterdi (tarayıcıdan sunucuya yükleme süresi hariç).
+**10.000 satır:** 0,259 sn (ilk çalıştırma 0,252 sn); N2 hedefi < 5 sn. Arayüzde aynı dosya 0,23 sn gösterdi (tarayıcıdan sunucuya yükleme süresi hariç).
 
 Tarayıcıda ayrıca denenen hatalı girdiler: boş dosya → "Dosya boş." uyarısı; CSV olmayan metin → 45 sütunun eksik olduğunu söyleyen uyarı; `demo_eksik_sutun.csv` → eksik 3 sütunu adıyla sayan uyarı; `demo_bozuk.csv` → 45 bozuk satır nedenleriyle (boş hücre 10, sayıya çevrilemeyen 20, Inf 15) atlandı, kalan 455 satır analiz edildi. Hiçbirinde uygulama çökmedi; başarısız analizler veritabanına yazılmadı.
 
-- `demo_normal.csv` alarmları: DoS/DDoS (2, CRITICAL); Botnet (1, CRITICAL)
-- `demo_ddos.csv` alarmları: DoS/DDoS (2393, CRITICAL); PortScan (1, WARNING)
-- `demo_portscan.csv` alarmları: DoS/DDoS (4, CRITICAL); Web Attack (1, CRITICAL); PortScan (383, WARNING)
-- `demo_karma.csv` alarmları: DoS/DDoS (799, CRITICAL); Brute Force (385, CRITICAL); Web Attack (184, CRITICAL); Botnet (181, CRITICAL); PortScan (195, WARNING)
-- `demo_10000_satir.csv` alarmları: DoS/DDoS (1458, CRITICAL); Brute Force (31, CRITICAL); Web Attack (10, CRITICAL); Botnet (6, CRITICAL); PortScan (8, WARNING)
-- `demo_bozuk.csv` alarmları: DoS/DDoS (78, CRITICAL); Brute Force (58, CRITICAL); Botnet (25, CRITICAL); Web Attack (18, CRITICAL); PortScan (25, WARNING)
+## 3. Alarm eşiği
 
-## 3. Dikkat çeken bulgu: normal trafikte yanlış alarm
+İlk sürümde tek bir akış bile KRİTİK alarm üretiyordu; yalnızca Benign içeren `demo_normal.csv` 3 yanlış tahmin yüzünden 2 KRİTİK alarm verdi. Kural eklendi: bir saldırı sınıfı için alarm, o sınıftan en az N akış tespit edilince verilir. N'nin altında kalırsa sarı "düşük sayıda şüpheli akış, incelenmeli" bilgisi gösterilir ve günlüğe WARNING yazılır; hiçbir tespit gizlenmez. Tahminler, tablo ve sınıf dağılımı değişmez. N `config.ALARM_MIN_FLOWS` ile ayarlanır (varsayılan **9**) ve arayüzün kenar çubuğundan da değiştirilebilir.
 
-`demo_normal.csv` yalnızca Benign akış içeriyor; 3.000 akıştan 3'ü saldırı sanıldı (2 DoS/DDoS, 1 Botnet) ve bu 2 KRİTİK alarm üretti. Şu anki kural tek bir akış için bile alarm veriyor. Yanlış alarmların ortalama güveni gerçek saldırılardan düşük (bu dosyada 0,81 ve 0,75; gerçek saldırı sınıflarında çoğunlukla 0,90'ın üstü). Bir alarm eşiği (en az N akış veya en az belirli bir güven) bu yanlış alarmları azaltabilir; bu bir tasarım kararı olduğu için ekibe bırakıldı.
+**N nasıl seçildi (yalnızca doğrulama kümesi, `experiments/alarm_threshold.py`):** 9. hafta ayarlarıyla yalnızca alt-eğitimde (1.407.332 satır) bir model eğitildi; model, görmediği doğrulama kümesinde (351.833 satır) tahmin yaptı. Uygulamadaki model doğrulama satırlarını eğitimde gördüğü için bu ölçümde kullanılmadı; test kümesine dokunulmadı. Doğrulamadaki 298.004 Benign akışın %0,07'si saldırı sanıldı (DoS/DDoS 69, PortScan 17, Brute Force 0, Web Attack 0, Botnet 128). Bu akışlardan her boyut için 2.000 rastgele "dosya" (parça) çekildi ve her N için kaç dosyada yanlış KRİTİK alarm çıktığı sayıldı. Seçim kuralı sonuçlara bakmadan önce belirlendi: 10.000 satırlık Benign parçalarda yanlış KRİTİK oranı <= %5 olan en küçük N.
+
+Yalnızca normal trafik içeren dosyalarda yanlış KRİTİK alarm çıkan dosya oranı:
+
+| N | 3.000 satır | 10.000 satır | 100.000 satır |
+| --- | --- | --- | --- |
+| 1 | %86,45 | %99,85 | %100,00 |
+| 2 | %45,55 | %97,45 | %100,00 |
+| 3 | %16,50 | %88,90 | %100,00 |
+| 5 | %1,00 | %47,00 | %100,00 |
+| 8 | %0,00 | %6,80 | %100,00 |
+| 9 (seçilen) | %0,00 | %2,55 | %100,00 |
+| 10 | %0,00 | %0,95 | %100,00 |
+| 50 | %0,00 | %0,00 | %10,75 |
+
+**Bedeli:** gerçek saldırı içeren (doğal dağılımlı) rastgele dosyalarda, dosyada gerçekten bulunan bir saldırı sınıfının N'den az akışla tespit edilip sarı bilgiye düşme oranı N=9 için 3.000 satırda %51,25, 10.000 satırda %19,98, 100.000 satırda %0,00. Bunlar dosyada çok az akışı olan saldırılardır (satırlar rastgele örneklendiği için nadir sınıflar küçük dosyalarda birkaç akışla temsil edilir); gizlenmez, "incelenmeli" olarak görünür. Gerçek trafikte saldırılar zamanda toplu geldiği için bu oran muhtemelen daha düşüktür, ancak bu ölçülmedi.
+
+**Sınır:** Yanlış saldırı akışı sayısı dosya boyutuyla orantılı büyüdüğü için sabit bir N büyük dosyalarda yetersiz kalır: 100.000 satırlık normal dosyalarda N=9 ile dosyaların %100,00'ünde yanlış KRİTİK alarm çıkıyor; N=50'de bile %10,75. Çok büyük dosyalar için oran tabanlı bir eşik (sınıfın akışların binde kaçı olduğu) daha uygun olur; bu ileride verilecek bir tasarım kararıdır.
+
+**Demo dosyalarında eşiksiz (N=1) ve eşikli (N=9) alarmlar** (tahminler aynı):
+
+| Dosya | KRİTİK (N=1) | KRİTİK (N=9) | İncelenmeli (N=9) | Eşikli alarmlar |
+| --- | --- | --- | --- | --- |
+| demo_normal.csv | 2 | 0 | 2 | DoS/DDoS 2 incelenmeli; Botnet 1 incelenmeli |
+| demo_ddos.csv | 1 | 1 | 1 | DoS/DDoS 2393 CRITICAL; PortScan 1 incelenmeli |
+| demo_portscan.csv | 2 | 0 | 2 | PortScan 383 WARNING; DoS/DDoS 4 incelenmeli; Web Attack 1 incelenmeli |
+| demo_karma.csv | 4 | 4 | 0 | DoS/DDoS 799 CRITICAL; Brute Force 385 CRITICAL; Web Attack 184 CRITICAL; Botnet 181 CRITICAL; PortScan 195 WARNING |
+| demo_10000_satir.csv | 4 | 3 | 2 | DoS/DDoS 1458 CRITICAL; Brute Force 31 CRITICAL; Web Attack 10 CRITICAL; PortScan 8 incelenmeli; Botnet 6 incelenmeli |
+| demo_bozuk.csv | 4 | 4 | 0 | DoS/DDoS 78 CRITICAL; Brute Force 58 CRITICAL; Botnet 25 CRITICAL; Web Attack 18 CRITICAL; PortScan 25 WARNING |
+
+Gerçek saldırı dosyalarında (`demo_ddos`, `demo_karma`, `demo_bozuk`) bütün KRİTİK alarmlar eşikle de korunuyor. `demo_normal` ve `demo_portscan`'deki tek tük yanlış KRİTİK alarmlar "incelenmeli"ye düştü. `demo_10000_satir`'da dosyada gerçekten 5 Botnet akışı var; model 6 akışa Botnet dedi ve bu sayı eşiğin altında kaldığı için KRİTİK yerine "incelenmeli" gösterildi: eşiğin bedeli bu tür az akışlı gerçek saldırılardır.
 
 ## 4. Eklenen bileşenler
 
@@ -65,7 +90,8 @@ Tarayıcıda ayrıca denenen hatalı girdiler: boş dosya → "Dosya boş." uyar
 | `src/service.py` | analiz akışı: tahmin → veritabanı → alarm |
 | `app.py` | Streamlit: Analiz ve Geçmiş Analizler sayfaları |
 | `scripts/make_demo_files.py` | test kümesinden demo CSV'leri |
-| `scripts/check_demo_files.py` | demo dosyalarını uçtan uca analiz edip süre ölçer |
+| `scripts/check_demo_files.py` | demo dosyalarını uçtan uca analiz edip süre ölçer; eşikli/eşiksiz alarm karşılaştırması |
+| `experiments/alarm_threshold.py` | alarm eşiği N'nin doğrulama kümesinde seçimi |
 | `artifacts/model_config.json` | model sürümü, sınıf sırası, Botnet eşiği, eğitim ayarları |
 
 Testler: `python -m pytest -q` (inference, database, alarm testleri dahil).

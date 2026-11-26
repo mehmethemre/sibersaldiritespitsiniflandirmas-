@@ -1,0 +1,5 @@
+parca_boyutu,ortalama_yanlis_saldiri_akisi,en_kalabalik_sinif_medyan,en_kalabalik_sinif_p95,en_kalabalik_sinif_max
+1000,0.701,0.0,2.0,4
+3000,2.136,1.0,3.0,7
+10000,7.1075,4.0,8.0,12
+100000,71.683,43.0,52.0,65
