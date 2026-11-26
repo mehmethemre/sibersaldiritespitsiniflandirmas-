@@ -1,6 +1,7 @@
 """src/inference.py ve src/service.py testleri: geçerli dosya, eksik sütun, bozuk değerler,
 boş dosya, Label ile karşılaştırma ve Botnet eşiğinin eğitimdekiyle aynı uygulanması."""
 import io
+import zipfile
 
 import numpy as np
 import pandas as pd
@@ -74,6 +75,42 @@ def test_bad_values_are_skipped_and_counted(predictor):
 def test_empty_or_invalid_files_raise_clear_error(predictor, content, message):
     with pytest.raises(InferenceError, match=message):
         predictor.analyze(content)
+
+
+def _zip_bytes():
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:      # sıkıştırmasız: içindeki CSV metni okunabilir
+        z.writestr("a.csv", to_bytes(make_flows(3)))
+    return buf.getvalue()
+
+
+@pytest.mark.parametrize("content, message", [
+    (lambda: _zip_bytes(), "CSV metin dosyası değil"),                 # zip / xlsx
+    (lambda: b"\xd0\xcf\x11\xe0" + bytes(500), "Excel .xls"),
+    (lambda: b"\x89PNG\r\n\x1a\n" + bytes(range(256)) * 4, "PNG"),
+    (lambda: b"%PDF-1.7\n1 0 obj\n", "PDF"),
+    (lambda: bytes(100), "ikili veri"),                                # yalnızca NUL baytı
+    (lambda: b"a,b\n1,2\n3,4,5,6\n", "3. satırda"),                    # alan sayısı tutarsız
+    (lambda: make_flows(3).to_csv(index=False, sep=";").encode(), "noktalı virgül"),
+])
+def test_non_csv_files_get_turkish_message(predictor, content, message):
+    with pytest.raises(InferenceError, match=message) as e:
+        predictor.analyze(content())
+    assert "Error" not in str(e.value) and "line" not in str(e.value)   # İngilizce iç mesaj yok
+
+
+def test_utf16_csv_is_read(predictor):
+    df = make_flows(n_per_class=3)
+    res = predictor.analyze(df.to_csv(index=False).encode("utf-16"))
+    assert res.analyzed_rows == len(df)
+
+
+def test_single_row_and_extra_columns(predictor):
+    one = make_flows(n_per_class=1).head(1)
+    res = predictor.analyze(to_bytes(one))
+    assert res.analyzed_rows == 1 and res.evaluation["karsilastirilan"] == 1
+    extra = make_flows(n_per_class=3).assign(Ekstra=1, Aciklama="metin")
+    assert predictor.analyze(to_bytes(extra)).analyzed_rows == len(extra)
 
 
 def test_all_rows_invalid(predictor):

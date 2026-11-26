@@ -15,6 +15,7 @@ Neden böyle?
 import io
 import json
 import logging
+import re
 import time
 import warnings
 from dataclasses import dataclass, field
@@ -30,6 +31,10 @@ from .evaluate import predict_classes
 
 log = logging.getLogger(__name__)
 LABEL_COLUMN = "Label"
+# Dosya başı imzası -> türü (CSV yerine yüklenebilecek yaygın ikili dosyalar)
+BINARY_SIGNATURES = {b"PK\x03\x04": "zip veya Excel .xlsx", b"\xd0\xcf\x11\xe0": "Excel .xls",
+                     b"%PDF": "PDF", b"\x89PNG": "PNG resmi", b"\xff\xd8\xff": "JPEG resmi",
+                     b"\x1f\x8b": "gzip"}
 
 
 class InferenceError(Exception):
@@ -102,6 +107,18 @@ class Predictor:
             data = source.read()
         if not data or not data.strip():
             raise InferenceError("Dosya boş.")
+        if data[:2] in (b"\xff\xfe", b"\xfe\xff"):     # Excel'in "Unicode metin" (UTF-16) kaydı
+            try:
+                data = data.decode("utf-16").encode("utf-8")
+            except UnicodeDecodeError as e:
+                raise InferenceError("Dosyanın karakter kodlaması okunamadı (UTF-16).") from e
+        # İkili dosya (Excel, zip, resim...) CSV gibi okunmaya çalışılırsa yanıltıcı "sütun eksik"
+        # mesajları çıkar; imzasından tanınıp açıkça söylenir. NUL baytı metin dosyasında olmaz.
+        kind = next((v for k, v in BINARY_SIGNATURES.items() if data.startswith(k)), None)
+        if kind or b"\x00" in data[:4096]:
+            raise InferenceError(
+                f"Dosya bir CSV metin dosyası değil ({kind or 'ikili veri'}). Excel'de "
+                "açtıysanız \"CSV (virgülle ayrılmış)\" olarak kaydedip yeniden yükleyin.")
         # Önce UTF-8; CICIDS dosyalarında bozuk kodlanmış karakterler olabildiği için latin-1 yedek
         for enc in ("utf-8-sig", "latin-1"):
             try:
@@ -112,7 +129,11 @@ class Predictor:
             except pd.errors.EmptyDataError as e:
                 raise InferenceError("Dosyada okunabilir veri yok.") from e
             except pd.errors.ParserError as e:
-                raise InferenceError(f"CSV biçimi okunamadı: {str(e).splitlines()[0]}") from e
+                m = re.search(r"line (\d+)", str(e))     # pandas mesajı İngilizce; satırı al
+                where = f"{m.group(1)}. satırda " if m else ""
+                raise InferenceError(
+                    f"CSV biçimi okunamadı: {where}başlıktakinden farklı sayıda alan var. "
+                    "Dosyanın virgülle ayrılmış bir CSV olduğundan emin olun.") from e
         df.columns = [str(c).strip() for c in df.columns]   # gerçek dosyalarda baştaki boşluk
         if len(df) == 0:
             raise InferenceError("Dosyada başlık satırı var ama veri satırı yok.")
@@ -133,6 +154,11 @@ class Predictor:
         """
         df = self._match_columns(df)
         missing = [f for f in self.features if f not in df.columns]
+        if len(missing) == len(self.features) and len(df.columns) == 1 and \
+                any(s in df.columns[0] for s in (";", "\t")):
+            raise InferenceError(
+                "Sütunlar virgülle değil, noktalı virgül veya sekmeyle ayrılmış görünüyor "
+                "(Türkçe Excel ayarı). Dosyayı virgülle ayrılmış CSV olarak kaydedin.")
         if missing:
             raise MissingColumnsError(missing, len(self.features))
 
