@@ -20,3 +20,6 @@ reports/**/deneme_frac*/
 # 9. hafta: uygulamanın yerel verisi (analiz geçmişi ve güvenlik günlüğü)
 data/*.db
 logs/
+
+# graphify çıktıları (bilgi grafiği, yerelde yeniden üretilir)
+graphify-out/

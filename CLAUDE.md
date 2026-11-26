@@ -67,3 +67,11 @@ N5 sade arayüz · N6 Python 3.10+, Windows/Linux.
 - Büyük veriyle uzun çalıştırmalardan önce `--sample-frac` ile dene.
 - Commit/push yalnızca kullanıcı isteyince.
 - Commit mesajlarına ve PR açıklamalarına "Co-Authored-By: Claude" veya benzeri imza satırı ekleme.
+
+## Güncel durum (26.11.2026)
+- 9. hafta + alarm eşiği (N=9) + arayüz kart ayrımı (kırmızı KRİTİK / turuncu UYARI / gri-mavi incelenmeli) tamamlandı ve GitHub'a push edildi (son commit `b658d54`). Sıradaki iş: 10. hafta testleri (yol haritası).
+- Geliştirme araçları kuruldu: superpowers, ponytail (bu projede kapalı), andrej-karpathy-skills, find-skills, graphify, caveman, claude-mem.
+- **caveman bu projede kullanılmaz**: açıklamalı, öğretici cevaplar isteniyor.
+- graphify bilgi grafiği `graphify-out/` altında (424 düğüm, 17 topluluk; `graphify-out/GRAPH_REPORT.md`). Klasör `.gitignore`'da; kod değişince `/graphify . --update` ile yenilenir.
+- graphify kancası yalnızca yerelde: `.claude/settings.local.json` (gitignore'da; ekip arkadaşlarında graphify yok). `graphify claude install` CLAUDE.md'ye yazdığı için kullanılmadı.
+- claude-mem şimdilik **kapalı** (`~/.claude/settings.json` → `"claude-mem@thedotmack": false`): arka plan servisi (localhost:37777) yanıt vermedi, `/learn-codebase` hafızaya kaydedilmedi. Açınca `/learn-codebase` yeniden çalıştırılmalı.
