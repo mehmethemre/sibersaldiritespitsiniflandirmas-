@@ -5,6 +5,11 @@ maxUploadSize = 500
 [browser]
 gatherUsageStats = false
 
-[theme]
-# Ana renk mavi: kırmızı yalnızca kritik alarm kartlarında kullanılsın
+# Ana renk mavi: kırmızı yalnızca kritik alarm kartlarında kullanılsın.
+# [theme] altına doğrudan primaryColor yazmak uygulamayı açık temaya sabitler; açık ve koyu
+# tema için ayrı bölümler kullanılınca uygulama sistemin temasını izlemeye devam eder.
+[theme.light]
 primaryColor = "#3B6FD4"
+
+[theme.dark]
+primaryColor = "#5B8DEF"

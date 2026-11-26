@@ -12,6 +12,7 @@ Yapı:
 * Kullanıcı kaynaklı her sorun InferenceError olarak gelir ve st.warning ile gösterilir;
   beklenmeyen hatalar da yakalanır, uygulama çökmez.
 """
+import html
 import logging
 
 import altair as alt
@@ -42,6 +43,26 @@ def pct(x):
 
 def tr_int(n):
     return f"{int(n):,}".replace(",", ".")
+
+
+# ------------------------------------------------------------------ uyarı kartı
+# WARNING seviyeli (eşiği geçen) alarmlar için anlaşılır başlıklar
+WARNING_TITLES = {"PortScan": "Port taraması tespit edildi"}
+
+
+def warning_card(title, detail):
+    """Turuncu UYARI kartı. Streamlit'te turuncu hazır kutu olmadığı için küçük bir HTML kutusu.
+
+    Zemin yarı saydam turuncu, sol şerit koyu turuncu; metin rengi temadan gelir, böylece açık
+    ve koyu temada okunur. Metinler html.escape ile kaçırılır (HTML olarak yorumlanmasın).
+    """
+    st.markdown(
+        '<div role="alert" style="background: rgba(240, 120, 20, 0.16); '
+        'border-left: 4px solid #E8710A; border-radius: 0.5rem; padding: 0.75rem 1rem; '
+        'margin-bottom: 1rem;">'
+        f'<div style="font-weight: 600;">⚠️ {html.escape(title)}</div>'
+        f'<div style="opacity: 0.85; font-size: 0.9rem;">{html.escape(detail)}</div></div>',
+        unsafe_allow_html=True)
 
 
 # ------------------------------------------------------------------ grafik
@@ -79,19 +100,24 @@ def show_result(state):
         st.info(f"{tr_int(res.skipped_rows)} satır bozuk olduğu için analiz dışı bırakıldı "
                 f"({reasons}).", icon="ℹ️")
 
-    # Alarmlar: kritikler kırmızı, PortScan sarı; eşiğin altındaki sınıflar sarı "incelenmeli".
+    # Üç ayrı görünüm, üç ayrı anlam:
+    #   kırmızı st.error  -> KRİTİK alarm (eşiği geçen DoS/DDoS, Botnet, Web Attack, Brute Force)
+    #   turuncu kart      -> UYARI (eşiği geçen WARNING seviyeli sınıf, ör. PortScan)
+    #   gri/mavi st.info  -> eşiğin altında kalan "incelenmeli" bilgisi (alarm değil)
     # Eşik yalnızca alarm seviyesini etkiler: tablo ve grafik her akışı olduğu gibi gösterir.
     if alarms:
         for a in alarms:
-            text = (f"**{a['sinif']}** — {tr_int(a['adet'])} akış "
-                    f"(ortalama güven {pct(a['ortalama_guven'])})")
+            count, conf = tr_int(a["adet"]), pct(a["ortalama_guven"])
             if a["seviye"] == "CRITICAL":
-                st.error(f"KRİTİK SALDIRI: {text}", icon="🚨")
+                st.error(f"KRİTİK SALDIRI: **{a['sinif']}** — {count} akış "
+                         f"(ortalama güven {conf})", icon="🚨")
             elif a["dusuk_sayi"]:
-                st.warning(f"Düşük sayıda şüpheli akış, incelenmeli: {text}. Alarm eşiği "
-                           f"{a['esik']} akış olduğu için kritik alarm verilmedi.", icon="🔎")
+                st.info(f"İncelenmeli: **{a['sinif']}** — {count} akış (ortalama güven {conf}). "
+                        f"Alarm eşiği {a['esik']} akış; bu sayı eşiğin altında olduğu için alarm "
+                        "verilmedi, düşük sayıda şüpheli akış olarak gösteriliyor.", icon="🔎")
             else:
-                st.warning(f"UYARI: {text}", icon="⚠️")
+                warning_card(f"UYARI: {WARNING_TITLES.get(a['sinif'], a['sinif'] + ' tespit edildi')}"
+                             f" ({count} akış)", f"Ortalama güven {conf}")
         st.caption(f"Alarm eşiği: en az {state['min_flows']} akış (analiz anında uygulandı). "
                    f"Alarmlar logs/security.log dosyasına ve veritabanına (analiz "
                    f"#{state['id']}) kaydedildi.")
