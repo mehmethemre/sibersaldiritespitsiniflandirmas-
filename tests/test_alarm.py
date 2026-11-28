@@ -130,3 +130,20 @@ def test_ratio_threshold_scales_with_file_size(tmp_path):
     assert kinds == {"DoS/DDoS": (9, "incelenmeli"), "Botnet": (9, "kritik"),
                      "PortScan": (9, "incelenmeli")}
     conn.close()
+
+
+def test_alarm_summary_rows_and_card_types():
+    from src.alarm import SUMMARY_COLUMNS, alarm_summary
+    alarms = [{"sinif": "DoS/DDoS", "adet": 50, "seviye": "CRITICAL", "ortalama_guven": 0.98765,
+               "dusuk_sayi": False, "esik": 9},
+              {"sinif": "PortScan", "adet": 20, "seviye": "WARNING", "ortalama_guven": 0.9,
+               "dusuk_sayi": False, "esik": 9},
+              {"sinif": "Botnet", "adet": 3, "seviye": "WARNING", "ortalama_guven": 0.5,
+               "dusuk_sayi": True, "esik": 9}]
+    df = alarm_summary(alarms, "demo.csv", 7)
+    assert list(df.columns) == SUMMARY_COLUMNS
+    assert df["kart"].tolist() == ["kritik", "uyari", "incelenmeli"]
+    assert df["esik_alti"].tolist() == [False, False, True]
+    assert (df["dosya"] == "demo.csv").all() and (df["analiz_no"] == 7).all()
+    assert df.loc[0, "ortalama_guven"] == 0.9877
+    assert alarm_summary([], "x.csv", 1).empty

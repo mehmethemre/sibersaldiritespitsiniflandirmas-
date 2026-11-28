@@ -109,3 +109,17 @@ def raise_alarms(class_summary, file_name, analiz_id=None, conn=None, logger=Non
     # her grupta en çok akıştan aza. Arayüzde en önemli alarm en üstte görünür.
     alarms.sort(key=lambda a: (a["seviye"] != "CRITICAL", a["dusuk_sayi"], -a["adet"]))
     return alarms
+
+
+SUMMARY_COLUMNS = ["dosya", "analiz_no", "sinif", "akis", "seviye", "kart", "esik", "esik_alti",
+                   "ortalama_guven"]
+
+
+def alarm_summary(alarms, file_name, analiz_id):
+    """Arayüzdeki 'Alarm özetini indir (CSV)' tablosu: alarm başına bir satır, kart sırasıyla."""
+    import pandas as pd
+    rows = [{"dosya": file_name, "analiz_no": analiz_id, "sinif": a["sinif"], "akis": a["adet"],
+             "seviye": a["seviye"], "kart": card_type(a), "esik": a["esik"],
+             "esik_alti": bool(a["dusuk_sayi"]), "ortalama_guven": round(a["ortalama_guven"], 4)}
+            for a in alarms]
+    return pd.DataFrame(rows, columns=SUMMARY_COLUMNS)
