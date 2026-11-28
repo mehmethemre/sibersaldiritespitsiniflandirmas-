@@ -110,7 +110,8 @@ def cm_heatmap(cm: pd.DataFrame):
     data["oran"] = (data["adet"] / row_sum.where(row_sum > 0)).fillna(0.0)
     data["etiket"] = data["adet"].map(tr_int)                 # Türkçe binlik ayıracı
     base = alt.Chart(data).encode(
-        x=alt.X("tahmin:N", sort=order_pred, title="Tahmin", axis=alt.Axis(labelAngle=-30)),
+        x=alt.X("tahmin:N", sort=order_pred, title="Tahmin",
+                axis=alt.Axis(labelAngle=-30, labelOverlap=False)),
         y=alt.Y("gercek:N", sort=order_true, title="Gerçek"))
     rect = base.mark_rect().encode(
         color=alt.Color("oran:Q", scale=alt.Scale(domain=[0, 1], scheme="blues"),
