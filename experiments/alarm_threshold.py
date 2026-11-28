@@ -105,9 +105,9 @@ def validation_predictions(args, log):
     return M["class_names"], M["y_val"], M["pred"], M["n_sub"]
 
 
-def validation_model(args, log):
-    """validation_predictions'ın ayrıntılı hali: model ve ara matrisler de döner (11. hafta
-    öznitelik önem analizi bunlara ihtiyaç duyar)."""
+def validation_data(args, log):
+    """Alt-eğitim / doğrulama hazırlığı (çakışma silme, öznitelik seçimi, ölçekleme); model yok.
+    11. hafta SMOTE denemesi aynı hazırlıkla farklı SMOTE/RF ayarlarını eğitir."""
     raw = load_raw(args.data, args.sample_frac, log, keep_port=True)
     classes = set(raw["Label"].map(config.map_label).dropna())
     cn = [c for c in config.CLASS_ORDER if c in classes]
@@ -118,6 +118,13 @@ def validation_model(args, log):
     feats, _ = select_features(X_fit, y_fit, log, use_extratrees=config.USE_EXTRATREES)
     P = prepare(V["X_sub"], V["y_sub"], V["n_sub"], V["X_val"], config.CONFLICT_MODE, log,
                 features=feats)
+    return cn, V, P
+
+
+def validation_model(args, log):
+    """validation_predictions'ın ayrıntılı hali: model ve ara matrisler de döner (11. hafta
+    öznitelik önem analizi bunlara ihtiyaç duyar)."""
+    cn, V, P = validation_data(args, log)
     from sklearn.ensemble import RandomForestClassifier
     X, y, _ = oversample(P["X_fit"], P["y_fit"], log, target=config.SMOTE_TARGET)
     model = RandomForestClassifier(**config.RF_PARAMS).fit(X, y)

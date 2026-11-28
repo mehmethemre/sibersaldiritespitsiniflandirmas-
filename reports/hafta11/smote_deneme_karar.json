@@ -1,0 +1,21 @@
+{
+  "secilen": {
+    "T": 5000,
+    "t": 0.3
+  },
+  "kazanc": 0.001961417824315914,
+  "tohum_sapmasi": 0.004014333159609793,
+  "benimsendi": false,
+  "neden": "kazanç 0.20 puan; gerekli: ≥ 1 puan ve > tohum sapması 0.40 puan",
+  "recall_siniri": 0.9,
+  "referans": {
+    "botnet_f1_ort": 0.7572252711984081,
+    "botnet_f1_std": 0.0017500831891011036,
+    "botnet_recall_ort": 0.9492753623188405
+  },
+  "alt_egitim_botnet": 900,
+  "dogrulama_botnet": 230,
+  "dogrulama_satir": 351833,
+  "ornekleme_orani": null,
+  "sure_dk": 25.29237677833333
+}

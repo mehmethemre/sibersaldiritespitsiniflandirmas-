@@ -1,0 +1,18 @@
+15:58:34 |   Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv: 225,745 satır
+15:58:35 |   Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv: 286,467 satır
+15:58:36 |   Friday-WorkingHours-Morning.pcap_ISCX.csv: 191,033 satır
+15:58:40 |   Monday-WorkingHours.pcap_ISCX.csv: 529,918 satır
+15:58:42 |   Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv: 288,602 satır
+15:58:42 |   Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv: 170,366 satır
+15:58:45 |   Tuesday-WorkingHours.pcap_ISCX.csv: 445,909 satır
+15:58:50 |   Wednesday-workingHours.pcap_ISCX.csv: 692,703 satır
+15:58:50 | Birleşik ham veri: 2,830,743 satır, 77 öznitelik
+15:59:34 | Kapsam dışı silinen: 47
+15:59:34 | Inf/NaN silinen: 2,867
+15:59:34 | Tekrarlayan silinen: 628,872
+15:59:34 | Sabit sütunlar (8): ['Bwd PSH Flags', 'Bwd URG Flags', 'Fwd Avg Bytes/Bulk', 'Fwd Avg Packets/Bulk', 'Fwd Avg Bulk Rate', 'Bwd Avg Bytes/Bulk', 'Bwd Avg Packets/Bulk', 'Bwd Avg Bulk Rate']
+15:59:34 | Temiz veri: 2,198,957 satır
+15:59:46 | [A) Port yok (mevcut)] eğitim 1,759,165 -> alt-eğitim 1,407,332 / doğrulama 351,833 · test 439,792
+15:59:55 | Korelasyon elemesi: 23 öznitelik elendi, 45 kaldı
+15:59:55 | ExtraTrees seçimi kapalı: korelasyon sonrası tüm öznitelikler kullanılıyor
+15:59:56 | Bitti · C:\Users\Emre\Desktop\siber-saldiri\siber-saldiri-siniflandirma\reports\hafta11

@@ -1,0 +1,68 @@
+16:05:29 |   Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv: 225,745 satır
+16:05:30 |   Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv: 286,467 satır
+16:05:31 |   Friday-WorkingHours-Morning.pcap_ISCX.csv: 191,033 satır
+16:05:34 |   Monday-WorkingHours.pcap_ISCX.csv: 529,918 satır
+16:05:35 |   Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv: 288,602 satır
+16:05:35 |   Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv: 170,366 satır
+16:05:37 |   Tuesday-WorkingHours.pcap_ISCX.csv: 445,909 satır
+16:05:41 |   Wednesday-workingHours.pcap_ISCX.csv: 692,703 satır
+16:05:41 | Birleşik ham veri: 2,830,743 satır, 77 öznitelik
+16:06:26 | Kapsam dışı silinen: 47
+16:06:26 | Inf/NaN silinen: 2,867
+16:06:26 | Tekrarlayan silinen: 628,872
+16:06:26 | Sabit sütunlar (8): ['Bwd PSH Flags', 'Bwd URG Flags', 'Fwd Avg Bytes/Bulk', 'Fwd Avg Packets/Bulk', 'Fwd Avg Bulk Rate', 'Bwd Avg Bytes/Bulk', 'Bwd Avg Packets/Bulk', 'Bwd Avg Bulk Rate']
+16:06:26 | Temiz veri: 2,198,957 satır
+16:06:39 | [A) Port yok (mevcut)] eğitim 1,759,165 -> alt-eğitim 1,407,332 / doğrulama 351,833 · test 439,792
+16:06:49 | Korelasyon elemesi: 23 öznitelik elendi, 45 kaldı
+16:06:49 | ExtraTrees seçimi kapalı: korelasyon sonrası tüm öznitelikler kullanılıyor
+16:06:53 | Çakışma modu 'sil': 127 grup, 254 satır çakışıyor, 254 satır silindi
+16:06:54 | Alt-eğitim Botnet: 900 · doğrulama Botnet: 230
+16:06:56 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,428,641 satır
+16:09:00 | T=yok t=0.3 s=42: Botnet F1 0.7306 recall 0.7783 FP 81 Macro F1 0.9365
+16:09:00 | T=yok t=0.5 s=42: Botnet F1 0.6971 recall 0.5652 FP 13 Macro F1 0.9309
+16:09:00 | T=yok t=0.7 s=42: Botnet F1 0.6609 recall 0.4957 FP 1 Macro F1 0.9249
+16:09:01 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,428,641 satır
+16:10:59 | T=yok t=0.3 s=43: Botnet F1 0.7280 recall 0.7913 FP 88 Macro F1 0.9334
+16:10:59 | T=yok t=0.5 s=43: Botnet F1 0.6883 recall 0.5522 FP 12 Macro F1 0.9268
+16:10:59 | T=yok t=0.7 s=43: Botnet F1 0.6589 recall 0.4913 FP 0 Macro F1 0.9219
+16:10:59 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,428,641 satır
+16:13:05 | T=yok t=0.3 s=44: Botnet F1 0.7349 recall 0.7957 FP 85 Macro F1 0.9352
+16:13:05 | T=yok t=0.5 s=44: Botnet F1 0.6793 recall 0.5435 FP 13 Macro F1 0.9260
+16:13:05 | T=yok t=0.7 s=44: Botnet F1 0.6570 recall 0.4913 FP 1 Macro F1 0.9223
+16:13:06 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,430,241 satır
+16:15:08 | T=2500 t=0.3 s=42: Botnet F1 0.7296 recall 0.8565 FP 113 Macro F1 0.9363
+16:15:08 | T=2500 t=0.5 s=42: Botnet F1 0.7231 recall 0.7609 FP 79 Macro F1 0.9352
+16:15:08 | T=2500 t=0.7 s=42: Botnet F1 0.7090 recall 0.5826 FP 14 Macro F1 0.9329
+16:15:09 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,430,241 satır
+16:17:05 | T=2500 t=0.3 s=43: Botnet F1 0.7463 recall 0.8826 FP 111 Macro F1 0.9398
+16:17:05 | T=2500 t=0.5 s=43: Botnet F1 0.7175 recall 0.7565 FP 81 Macro F1 0.9350
+16:17:05 | T=2500 t=0.7 s=43: Botnet F1 0.6880 recall 0.5609 FP 16 Macro F1 0.9301
+16:17:06 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,430,241 satır
+16:19:08 | T=2500 t=0.3 s=44: Botnet F1 0.7300 recall 0.8522 FP 111 Macro F1 0.9357
+16:19:08 | T=2500 t=0.5 s=44: Botnet F1 0.7254 recall 0.7696 FP 81 Macro F1 0.9349
+16:19:09 | T=2500 t=0.7 s=44: Botnet F1 0.6971 recall 0.5652 FP 13 Macro F1 0.9302
+16:19:09 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,432,741 satır
+16:21:03 | T=5000 t=0.3 s=42: Botnet F1 0.7563 recall 0.9174 FP 117 Macro F1 0.9400
+16:21:03 | T=5000 t=0.5 s=42: Botnet F1 0.7241 recall 0.8043 FP 96 Macro F1 0.9346
+16:21:03 | T=5000 t=0.7 s=42: Botnet F1 0.7269 recall 0.7174 FP 59 Macro F1 0.9351
+16:21:04 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,432,741 satır
+16:22:58 | T=5000 t=0.3 s=43: Botnet F1 0.7638 recall 0.9348 FP 118 Macro F1 0.9423
+16:22:58 | T=5000 t=0.5 s=43: Botnet F1 0.7234 recall 0.8130 FP 100 Macro F1 0.9356
+16:22:58 | T=5000 t=0.7 s=43: Botnet F1 0.7289 recall 0.7304 FP 63 Macro F1 0.9365
+16:22:59 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,432,741 satır
+16:24:57 | T=5000 t=0.3 s=44: Botnet F1 0.7575 recall 0.9304 FP 121 Macro F1 0.9398
+16:24:57 | T=5000 t=0.5 s=44: Botnet F1 0.7234 recall 0.8130 FP 100 Macro F1 0.9341
+16:24:57 | T=5000 t=0.7 s=44: Botnet F1 0.7394 recall 0.7217 FP 53 Macro F1 0.9368
+16:24:58 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,437,741 satır
+16:26:54 | T=10000 t=0.3 s=42: Botnet F1 0.7569 recall 0.9478 FP 128 Macro F1 0.9406
+16:26:54 | T=10000 t=0.5 s=42: Botnet F1 0.7364 recall 0.8565 FP 108 Macro F1 0.9372
+16:26:54 | T=10000 t=0.7 s=42: Botnet F1 0.7203 recall 0.7783 FP 88 Macro F1 0.9345
+16:26:55 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,437,741 satır
+16:28:49 | T=10000 t=0.3 s=43: Botnet F1 0.7591 recall 0.9522 FP 128 Macro F1 0.9407
+16:28:50 | T=10000 t=0.5 s=43: Botnet F1 0.7317 recall 0.8478 FP 108 Macro F1 0.9362
+16:28:50 | T=10000 t=0.7 s=43: Botnet F1 0.7232 recall 0.7783 FP 86 Macro F1 0.9347
+16:28:50 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,437,741 satır
+16:30:44 | T=10000 t=0.3 s=44: Botnet F1 0.7556 recall 0.9478 FP 129 Macro F1 0.9395
+16:30:44 | T=10000 t=0.5 s=44: Botnet F1 0.7307 recall 0.8435 FP 107 Macro F1 0.9354
+16:30:45 | T=10000 t=0.7 s=44: Botnet F1 0.7247 recall 0.7783 FP 85 Macro F1 0.9344
+16:30:45 | Karar: {'secilen': {'T': 5000, 't': 0.3}, 'kazanc': 0.001961417824315914, 'tohum_sapmasi': 0.004014333159609793, 'benimsendi': False, 'neden': 'kazanç 0.20 puan; gerekli: ≥ 1 puan ve > tohum sapması 0.40 puan', 'recall_siniri': 0.9, 'referans': {'botnet_f1_ort': 0.7572252711984081, 'botnet_f1_std': 0.0017500831891011036, 'botnet_recall_ort': 0.9492753623188405}, 'alt_egitim_botnet': 900, 'dogrulama_botnet': 230, 'dogrulama_satir': 351833, 'ornekleme_orani': None, 'sure_dk': 25.29237677833333} · 25.3 dk
