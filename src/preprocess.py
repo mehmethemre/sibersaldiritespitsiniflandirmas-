@@ -227,24 +227,31 @@ class SmoteTarget:
         return {c: target for c, n in counts.items() if n < target and c != majority}
 
 
-def oversample(X, y, log=print, target=SMOTE_TARGET):
-    """target: küçük sınıfların tamamlanacağı satır sayısı (varsayılan config.SMOTE_TARGET)."""
+def oversample(X, y, log=print, target=SMOTE_TARGET, class_targets=None,
+               random_state=RANDOM_STATE):
+    """target: küçük sınıfların tamamlanacağı satır sayısı (varsayılan config.SMOTE_TARGET).
+
+    class_targets: {sınıf kodu: hedef} — o sınıf için target yerine kullanılır (11. hafta Botnet
+    denemesi). Hedef sınıfın mevcut sayısından küçük/eşitse sınıf çoğaltılmaz.
+    """
     counts = pd.Series(y).value_counts()
     majority = counts.idxmax()   # en büyük sınıf (Benign) asla çoğaltılmaz
-    target = min(int(target), int(counts.max()))
-    strategy = {int(c): target for c, n in counts.items() if n < target and c != majority}
+    cap = int(counts.max())
+    goal = {int(c): min(int((class_targets or {}).get(int(c), target)), cap) for c in counts.index}
+    strategy = {int(c): goal[int(c)] for c, n in counts.items()
+                if n < goal[int(c)] and c != majority}
     if not strategy:
         log("SMOTE: hedefin altında sınıf yok, atlandı")
         return X, y, "yok"
     k = min(SMOTE_K, int(counts[list(strategy)].min()) - 1)
     try:
         from imblearn.over_sampling import SMOTE
-        sm = SMOTE(sampling_strategy=strategy, k_neighbors=k, random_state=RANDOM_STATE)
+        sm = SMOTE(sampling_strategy=strategy, k_neighbors=k, random_state=random_state)
         Xr, yr = sm.fit_resample(X, y)
         method = "imblearn.SMOTE"
     except ImportError:
         log("UYARI: imbalanced-learn bulunamadı, yedek SMOTE kullanılıyor")
-        Xr, yr = _simple_smote(X, y, strategy, k, RANDOM_STATE)
+        Xr, yr = _simple_smote(X, y, strategy, k, random_state)
         method = "yedek SMOTE (imblearn yok)"
     log(f"SMOTE ({method}, k={k}): {len(X):,} -> {len(Xr):,} satır")
     return Xr.astype(np.float32), yr, method

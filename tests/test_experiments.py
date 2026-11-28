@@ -86,6 +86,15 @@ def test_smote_target_and_oversample_target():
     X = np.random.default_rng(0).normal(size=(len(y), 3)).astype(np.float32)
     Xr, yr, _ = oversample(X, y, quiet, target=100)
     assert np.bincount(yr).tolist() == [500, 100, 100]
+    # 11. hafta: sınıf bazında hedef; mevcut sayıdan küçük hedef = çoğaltma yok
+    Xr, yr, _ = oversample(X, y, quiet, target=100, class_targets={2: 10})
+    assert np.bincount(yr).tolist() == [500, 100, 20]
+    Xr, yr, _ = oversample(X, y, quiet, target=100, class_targets={2: 60})
+    assert np.bincount(yr).tolist() == [500, 100, 60]
+    # tohum sonucu değiştirir, aynı tohum aynı sonucu verir
+    a = oversample(X, y, quiet, target=100, random_state=1)[0]
+    assert np.array_equal(a, oversample(X, y, quiet, target=100, random_state=1)[0])
+    assert not np.array_equal(a, oversample(X, y, quiet, target=100, random_state=2)[0])
 
 
 def test_split_train_val_is_stratified_and_disjoint():
@@ -140,3 +149,30 @@ def test_run_experiments_smoke(tmp_path):
                                                 "min_samples_split", "min_samples_leaf",
                                                 "max_features"}
     assert "Deney 3" in (out / "rapor_tablolari_hafta8.md").read_text(encoding="utf-8")
+
+
+def _old_oversample(X, y, target):
+    """11. hafta değişikliğinden ÖNCEKİ oversample mantığının birebir kopyası (git 6579bcc)."""
+    from imblearn.over_sampling import SMOTE
+    from src.config import RANDOM_STATE, SMOTE_K
+    counts = pd.Series(y).value_counts()
+    majority = counts.idxmax()
+    target = min(int(target), int(counts.max()))
+    strategy = {int(c): target for c, n in counts.items() if n < target and c != majority}
+    if not strategy:
+        return X, y
+    k = min(SMOTE_K, int(counts[list(strategy)].min()) - 1)
+    Xr, yr = SMOTE(sampling_strategy=strategy, k_neighbors=k,
+                   random_state=RANDOM_STATE).fit_resample(X, y)
+    return Xr.astype(np.float32), yr
+
+
+@pytest.mark.parametrize("target", [100, 300, 10_000, 30])
+def test_oversample_defaults_match_old_behaviour(target):
+    # 3. sınıf hedefin üstünde (çoğaltılmaz), en büyük sınıf asla çoğaltılmaz
+    y = np.array([0] * 600 + [1] * 50 + [2] * 20 + [3] * 150)
+    X = np.random.default_rng(7).normal(size=(len(y), 4)).astype(np.float32)
+    Xn, yn, _ = oversample(X, y, quiet, target=target)
+    Xo, yo = _old_oversample(X, y, target)
+    assert np.array_equal(yn, yo)
+    assert np.array_equal(Xn, Xo)
