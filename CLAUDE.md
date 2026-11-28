@@ -88,6 +88,20 @@ N5 sade arayüz · N6 Python 3.10+, Windows/Linux.
 - Kalan sınır / 11. hafta için aday: `max(N_min, oran × n)` biçimi büyük dosyada gereğinden yüksek
   eşik veriyor; beklenen yanlış alarm + dalgalanma payı (Poisson üst sınırı) düşünülebilir.
 
+## 11. hafta: Botnet SMOTE denemesi (ölçüt deneyden ÖNCE yazıldı, 28.11.2026)
+Ayrıntı: `reports/hafta11/botnet_secim_olcutu.md` (deney: `experiments/botnet_smote.py`).
+- Mevcut ayar (SMOTE 10.000, eşik 0,30, tohum 42) doğrulamada: 230 Botnet satırı, recall %94,78,
+  precision %63,01, F1 %75,69. Recall %90'ı sağladığı için sınır mutlak kalır.
+- Izgara: Botnet SMOTE hedefi {yok (900), 2.500, 5.000, 10.000} × Botnet eşiği {0,30; 0,50; 0,70}
+  × tohum {42, 43, 44} (SMOTE ve RF tohumu). Diğer küçük sınıflar hep 10.000. Yalnızca doğrulama.
+- Uygunluk: ortalama Botnet recall ≥ %90 (R'nin 3 tohum ortalaması %90'ın altındaysa: R − 2 puan);
+  Botnet dışı her sınıfın ortalama F1'i ≥ R − 0,5 puan. R = (10.000; 0,30), aynı 3 tohum.
+- Seçim: uygunlar içinde en yüksek ortalama Botnet F1. Benimseme: Δ ≥ 1 puan VE
+  Δ > max(std seçilen, std R). Değilse mevcut ayar kalır ve test kümesi kullanılmaz.
+- Benimsenirse: son model tüm eğitimde (tohum 42); alarm oranları/N_min doğrulamada 10. hafta
+  yöntemiyle yeniden; N2/N3 yeniden ölçülür; uygulama ve testler güncellenir; testte yalnızca
+  seçilen ayar bir kez ölçülür (testin **ikinci** kullanımı, 9. hafta test sonuçları yanında kalır).
+
 ## Güncel durum (26.11.2026)
 - 10. hafta tamamlandı ve GitHub'a push edildi (`303dd00`). Sıradaki iş: 11. hafta (yol haritası).
 - Arayüz ölçüm analizleri (#14–#17, perf_*.csv) veritabanından ve `logs/security.log`'dan silindi;
