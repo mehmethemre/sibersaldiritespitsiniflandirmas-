@@ -1,0 +1,631 @@
+{
+  "sablon": {
+    "Init_Win_bytes_forward": 8192,
+    "Init_Win_bytes_backward": 0,
+    "Total Length of Fwd Packets": 0,
+    "Total Length of Bwd Packets": 18,
+    "Max Packet Length": 6
+  },
+  "oznitelik_sayisi": 45,
+  "alt_egitim_cakisma_oncesi": {
+    "benign_satir": 1077,
+    "botnet_satir": 315,
+    "benign_farkli_vektor": 1077,
+    "botnet_farkli_vektor": 315,
+    "iki_etikette_ortak_vektor": 0,
+    "botnet_satiri_ortak_vektorde": 0,
+    "benign_satiri_ortak_vektorde": 0,
+    "degisen_oznitelikler": [
+      {
+        "oznitelik": "Flow Duration",
+        "benign_medyan": 1045150.0,
+        "benign_q1": 1002571.0,
+        "benign_q3": 1269499.0,
+        "botnet_medyan": 1009428.0,
+        "botnet_q1": 998025.0,
+        "botnet_q3": 1027533.5
+      },
+      {
+        "oznitelik": "Bwd IAT Total",
+        "benign_medyan": 1030813.0,
+        "benign_q1": 1001917.0,
+        "benign_q3": 1183630.0,
+        "botnet_medyan": 1008676.0,
+        "botnet_q1": 997358.0,
+        "botnet_q3": 1027022.5
+      },
+      {
+        "oznitelik": "Fwd IAT Max",
+        "benign_medyan": 515961.0,
+        "benign_q1": 501681.0,
+        "benign_q3": 594016.0,
+        "botnet_medyan": 509194.0,
+        "botnet_q1": 500030.5,
+        "botnet_q3": 515615.0
+      },
+      {
+        "oznitelik": "Bwd IAT Max",
+        "benign_medyan": 515963.0,
+        "benign_q1": 501374.0,
+        "benign_q3": 594033.0,
+        "botnet_medyan": 509019.0,
+        "botnet_q1": 500080.5,
+        "botnet_q3": 515385.0
+      },
+      {
+        "oznitelik": "Fwd IAT Std",
+        "benign_medyan": 1329.3607177734375,
+        "benign_q1": 501.3387145996094,
+        "benign_q3": 3527.755615234375,
+        "botnet_medyan": 1636.9521484375,
+        "botnet_q1": 1240.618896484375,
+        "botnet_q3": 4789.587890625
+      },
+      {
+        "oznitelik": "Fwd IAT Mean",
+        "benign_medyan": 515393.5,
+        "benign_q1": 501014.5,
+        "benign_q3": 591697.0,
+        "botnet_medyan": 504402.0,
+        "botnet_q1": 498652.0,
+        "botnet_q3": 513548.0
+      },
+      {
+        "oznitelik": "Bwd IAT Mean",
+        "benign_medyan": 515406.5,
+        "benign_q1": 500958.5,
+        "benign_q3": 591815.0,
+        "botnet_medyan": 504338.0,
+        "botnet_q1": 498679.0,
+        "botnet_q3": 513511.25
+      },
+      {
+        "oznitelik": "Fwd IAT Min",
+        "benign_medyan": 514795.0,
+        "benign_q1": 500036.0,
+        "benign_q3": 589667.0,
+        "botnet_medyan": 500447.0,
+        "botnet_q1": 497457.0,
+        "botnet_q3": 509945.0
+      },
+      {
+        "oznitelik": "Bwd IAT Min",
+        "benign_medyan": 514927.0,
+        "benign_q1": 500101.0,
+        "benign_q3": 589667.0,
+        "botnet_medyan": 500365.0,
+        "botnet_q1": 497489.5,
+        "botnet_q3": 509996.0
+      },
+      {
+        "oznitelik": "Flow IAT Std",
+        "benign_medyan": 270946.875,
+        "benign_q1": 226860.953125,
+        "benign_q3": 273862.59375,
+        "botnet_medyan": 275607.875,
+        "botnet_q1": 272625.046875,
+        "botnet_q3": 280666.71875
+      },
+      {
+        "oznitelik": "Flow Bytes/s",
+        "benign_medyan": 17.222408294677734,
+        "benign_q1": 14.178821563720703,
+        "benign_q3": 17.953840255737305,
+        "botnet_medyan": 17.831880569458008,
+        "botnet_q1": 17.51767921447754,
+        "botnet_q3": 18.03562068939209
+      },
+      {
+        "oznitelik": "Bwd IAT Std",
+        "benign_medyan": 1480.681640625,
+        "benign_q1": 490.0249938964844,
+        "benign_q3": 3552.50439453125,
+        "botnet_medyan": 1856.1552734375,
+        "botnet_q1": 1199.2531127929688,
+        "botnet_q3": 4739.029541015625
+      },
+      {
+        "oznitelik": "Flow IAT Mean",
+        "benign_medyan": 209030.0,
+        "benign_q1": 200514.203125,
+        "benign_q3": 253899.796875,
+        "botnet_medyan": 201885.59375,
+        "botnet_q1": 199605.0,
+        "botnet_q3": 205506.703125
+      },
+      {
+        "oznitelik": "Flow IAT Min",
+        "benign_medyan": 728.0,
+        "benign_q1": 470.0,
+        "benign_q3": 86584.0,
+        "botnet_medyan": 454.0,
+        "botnet_q1": 403.5,
+        "botnet_q3": 512.0
+      },
+      {
+        "oznitelik": "Flow Packets/s",
+        "benign_medyan": 5.740802764892578,
+        "benign_q1": 4.726274013519287,
+        "benign_q3": 5.984613418579102,
+        "botnet_medyan": 5.943960189819336,
+        "botnet_q1": 5.839226484298706,
+        "botnet_q3": 6.011873483657837
+      },
+      {
+        "oznitelik": "Bwd Packets/s",
+        "benign_medyan": 2.870401382446289,
+        "benign_q1": 2.3631370067596436,
+        "benign_q3": 2.992306709289551,
+        "botnet_medyan": 2.971980094909668,
+        "botnet_q1": 2.919613242149353,
+        "botnet_q3": 3.0059367418289185
+      }
+    ]
+  },
+  "alt_egitim_cakisma_sonrasi": {
+    "benign_satir": 1077,
+    "botnet_satir": 315,
+    "benign_farkli_vektor": 1077,
+    "botnet_farkli_vektor": 315,
+    "iki_etikette_ortak_vektor": 0,
+    "botnet_satiri_ortak_vektorde": 0,
+    "benign_satiri_ortak_vektorde": 0,
+    "degisen_oznitelikler": [
+      {
+        "oznitelik": "Flow Duration",
+        "benign_medyan": 1045150.0,
+        "benign_q1": 1002571.0,
+        "benign_q3": 1269499.0,
+        "botnet_medyan": 1009428.0,
+        "botnet_q1": 998025.0,
+        "botnet_q3": 1027533.5
+      },
+      {
+        "oznitelik": "Bwd IAT Total",
+        "benign_medyan": 1030813.0,
+        "benign_q1": 1001917.0,
+        "benign_q3": 1183630.0,
+        "botnet_medyan": 1008676.0,
+        "botnet_q1": 997358.0,
+        "botnet_q3": 1027022.5
+      },
+      {
+        "oznitelik": "Fwd IAT Max",
+        "benign_medyan": 515961.0,
+        "benign_q1": 501681.0,
+        "benign_q3": 594016.0,
+        "botnet_medyan": 509194.0,
+        "botnet_q1": 500030.5,
+        "botnet_q3": 515615.0
+      },
+      {
+        "oznitelik": "Bwd IAT Max",
+        "benign_medyan": 515963.0,
+        "benign_q1": 501374.0,
+        "benign_q3": 594033.0,
+        "botnet_medyan": 509019.0,
+        "botnet_q1": 500080.5,
+        "botnet_q3": 515385.0
+      },
+      {
+        "oznitelik": "Fwd IAT Std",
+        "benign_medyan": 1329.3607177734375,
+        "benign_q1": 501.3387145996094,
+        "benign_q3": 3527.755615234375,
+        "botnet_medyan": 1636.9521484375,
+        "botnet_q1": 1240.618896484375,
+        "botnet_q3": 4789.587890625
+      },
+      {
+        "oznitelik": "Fwd IAT Mean",
+        "benign_medyan": 515393.5,
+        "benign_q1": 501014.5,
+        "benign_q3": 591697.0,
+        "botnet_medyan": 504402.0,
+        "botnet_q1": 498652.0,
+        "botnet_q3": 513548.0
+      },
+      {
+        "oznitelik": "Bwd IAT Mean",
+        "benign_medyan": 515406.5,
+        "benign_q1": 500958.5,
+        "benign_q3": 591815.0,
+        "botnet_medyan": 504338.0,
+        "botnet_q1": 498679.0,
+        "botnet_q3": 513511.25
+      },
+      {
+        "oznitelik": "Fwd IAT Min",
+        "benign_medyan": 514795.0,
+        "benign_q1": 500036.0,
+        "benign_q3": 589667.0,
+        "botnet_medyan": 500447.0,
+        "botnet_q1": 497457.0,
+        "botnet_q3": 509945.0
+      },
+      {
+        "oznitelik": "Bwd IAT Min",
+        "benign_medyan": 514927.0,
+        "benign_q1": 500101.0,
+        "benign_q3": 589667.0,
+        "botnet_medyan": 500365.0,
+        "botnet_q1": 497489.5,
+        "botnet_q3": 509996.0
+      },
+      {
+        "oznitelik": "Flow IAT Std",
+        "benign_medyan": 270946.875,
+        "benign_q1": 226860.953125,
+        "benign_q3": 273862.59375,
+        "botnet_medyan": 275607.875,
+        "botnet_q1": 272625.046875,
+        "botnet_q3": 280666.71875
+      },
+      {
+        "oznitelik": "Flow Bytes/s",
+        "benign_medyan": 17.222408294677734,
+        "benign_q1": 14.178821563720703,
+        "benign_q3": 17.953840255737305,
+        "botnet_medyan": 17.831880569458008,
+        "botnet_q1": 17.51767921447754,
+        "botnet_q3": 18.03562068939209
+      },
+      {
+        "oznitelik": "Bwd IAT Std",
+        "benign_medyan": 1480.681640625,
+        "benign_q1": 490.0249938964844,
+        "benign_q3": 3552.50439453125,
+        "botnet_medyan": 1856.1552734375,
+        "botnet_q1": 1199.2531127929688,
+        "botnet_q3": 4739.029541015625
+      },
+      {
+        "oznitelik": "Flow IAT Mean",
+        "benign_medyan": 209030.0,
+        "benign_q1": 200514.203125,
+        "benign_q3": 253899.796875,
+        "botnet_medyan": 201885.59375,
+        "botnet_q1": 199605.0,
+        "botnet_q3": 205506.703125
+      },
+      {
+        "oznitelik": "Flow IAT Min",
+        "benign_medyan": 728.0,
+        "benign_q1": 470.0,
+        "benign_q3": 86584.0,
+        "botnet_medyan": 454.0,
+        "botnet_q1": 403.5,
+        "botnet_q3": 512.0
+      },
+      {
+        "oznitelik": "Flow Packets/s",
+        "benign_medyan": 5.740802764892578,
+        "benign_q1": 4.726274013519287,
+        "benign_q3": 5.984613418579102,
+        "botnet_medyan": 5.943960189819336,
+        "botnet_q1": 5.839226484298706,
+        "botnet_q3": 6.011873483657837
+      },
+      {
+        "oznitelik": "Bwd Packets/s",
+        "benign_medyan": 2.870401382446289,
+        "benign_q1": 2.3631370067596436,
+        "benign_q3": 2.992306709289551,
+        "botnet_medyan": 2.971980094909668,
+        "botnet_q1": 2.919613242149353,
+        "botnet_q3": 3.0059367418289185
+      }
+    ]
+  },
+  "dogrulama": {
+    "benign_satir": 243,
+    "botnet_satir": 80,
+    "benign_farkli_vektor": 243,
+    "botnet_farkli_vektor": 80,
+    "iki_etikette_ortak_vektor": 0,
+    "botnet_satiri_ortak_vektorde": 0,
+    "benign_satiri_ortak_vektorde": 0,
+    "degisen_oznitelikler": [
+      {
+        "oznitelik": "Flow Duration",
+        "benign_medyan": 1076583.0,
+        "benign_q1": 1008013.5,
+        "benign_q3": 1302863.5,
+        "botnet_medyan": 1007908.5,
+        "botnet_q1": 997161.75,
+        "botnet_q3": 1029401.25
+      },
+      {
+        "oznitelik": "Bwd IAT Total",
+        "benign_medyan": 1054885.0,
+        "benign_q1": 1007298.5,
+        "benign_q3": 1199760.5,
+        "botnet_medyan": 1007505.0,
+        "botnet_q1": 996660.5,
+        "botnet_q3": 1028686.25
+      },
+      {
+        "oznitelik": "Fwd IAT Max",
+        "benign_medyan": 530001.0,
+        "benign_q1": 507233.0,
+        "benign_q3": 600822.0,
+        "botnet_medyan": 507215.5,
+        "botnet_q1": 500013.75,
+        "botnet_q3": 515625.25
+      },
+      {
+        "oznitelik": "Bwd IAT Max",
+        "benign_medyan": 530291.0,
+        "benign_q1": 507176.0,
+        "benign_q3": 600625.0,
+        "botnet_medyan": 507209.0,
+        "botnet_q1": 499836.0,
+        "botnet_q3": 515612.0
+      },
+      {
+        "oznitelik": "Fwd IAT Std",
+        "benign_medyan": 1373.201416015625,
+        "benign_q1": 416.8394470214844,
+        "benign_q3": 3837.114990234375,
+        "botnet_medyan": 1616.446044921875,
+        "botnet_q1": 1264.4837341308594,
+        "botnet_q3": 4821.05419921875
+      },
+      {
+        "oznitelik": "Fwd IAT Mean",
+        "benign_medyan": 527450.5,
+        "benign_q1": 503645.5,
+        "benign_q3": 600248.75,
+        "botnet_medyan": 503658.25,
+        "botnet_q1": 498318.75,
+        "botnet_q3": 514489.125
+      },
+      {
+        "oznitelik": "Bwd IAT Mean",
+        "benign_medyan": 527442.5,
+        "benign_q1": 503649.25,
+        "benign_q3": 599880.25,
+        "botnet_medyan": 503752.5,
+        "botnet_q1": 498330.25,
+        "botnet_q3": 514343.125
+      },
+      {
+        "oznitelik": "Fwd IAT Min",
+        "benign_medyan": 524900.0,
+        "benign_q1": 500784.0,
+        "benign_q3": 599504.0,
+        "botnet_medyan": 500532.5,
+        "botnet_q1": 497418.0,
+        "botnet_q3": 513347.25
+      },
+      {
+        "oznitelik": "Bwd IAT Min",
+        "benign_medyan": 525033.0,
+        "benign_q1": 500741.5,
+        "benign_q3": 599364.5,
+        "botnet_medyan": 500416.5,
+        "botnet_q1": 497393.75,
+        "botnet_q3": 513115.0
+      },
+      {
+        "oznitelik": "Flow IAT Std",
+        "benign_medyan": 264200.3125,
+        "benign_q1": 218639.984375,
+        "benign_q3": 273951.640625,
+        "botnet_medyan": 275340.8125,
+        "botnet_q1": 272329.5546875,
+        "botnet_q3": 281139.3203125
+      },
+      {
+        "oznitelik": "Flow Bytes/s",
+        "benign_medyan": 16.719566345214844,
+        "benign_q1": 13.815722465515137,
+        "benign_q3": 17.856938362121582,
+        "botnet_medyan": 17.858779907226562,
+        "botnet_q1": 17.485893726348877,
+        "botnet_q3": 18.05123472213745
+      },
+      {
+        "oznitelik": "Bwd IAT Std",
+        "benign_medyan": 1337.138916015625,
+        "benign_q1": 413.65745544433594,
+        "benign_q3": 3802.466796875,
+        "botnet_medyan": 1738.0684814453125,
+        "botnet_q1": 1301.9603576660156,
+        "botnet_q3": 4923.5845947265625
+      },
+      {
+        "oznitelik": "Flow IAT Mean",
+        "benign_medyan": 215316.59375,
+        "benign_q1": 201602.6953125,
+        "benign_q3": 260572.703125,
+        "botnet_medyan": 201581.6875,
+        "botnet_q1": 199432.3515625,
+        "botnet_q3": 205880.25
+      },
+      {
+        "oznitelik": "Flow IAT Min",
+        "benign_medyan": 23374.0,
+        "benign_q1": 490.0,
+        "benign_q3": 101276.0,
+        "botnet_medyan": 440.0,
+        "botnet_q1": 397.25,
+        "botnet_q3": 506.25
+      },
+      {
+        "oznitelik": "Flow Packets/s",
+        "benign_medyan": 5.573188304901123,
+        "benign_q1": 4.6052405834198,
+        "benign_q3": 5.952312707901001,
+        "botnet_medyan": 5.952927112579346,
+        "botnet_q1": 5.8286309242248535,
+        "botnet_q3": 6.017077803611755
+      },
+      {
+        "oznitelik": "Bwd Packets/s",
+        "benign_medyan": 2.7865941524505615,
+        "benign_q1": 2.3026202917099,
+        "benign_q3": 2.9761563539505005,
+        "botnet_medyan": 2.976463556289673,
+        "botnet_q1": 2.9143154621124268,
+        "botnet_q3": 3.0085389018058777
+      }
+    ]
+  },
+  "ornekleme_orani": null,
+  "alt_egitim_sonrasi_arti_dogrulama": {
+    "benign_satir": 1320,
+    "botnet_satir": 395,
+    "benign_farkli_vektor": 1320,
+    "botnet_farkli_vektor": 395,
+    "iki_etikette_ortak_vektor": 0,
+    "botnet_satiri_ortak_vektorde": 0,
+    "benign_satiri_ortak_vektorde": 0,
+    "degisen_oznitelikler": [
+      {
+        "oznitelik": "Flow Duration",
+        "benign_medyan": 1045362.0,
+        "benign_q1": 1003012.5,
+        "benign_q3": 1279555.5,
+        "botnet_medyan": 1009265.0,
+        "botnet_q1": 997444.0,
+        "botnet_q3": 1028825.0
+      },
+      {
+        "oznitelik": "Bwd IAT Total",
+        "benign_medyan": 1031157.5,
+        "benign_q1": 1002298.5,
+        "benign_q3": 1186400.25,
+        "botnet_medyan": 1008609.0,
+        "botnet_q1": 996860.0,
+        "botnet_q3": 1028035.5
+      },
+      {
+        "oznitelik": "Fwd IAT Max",
+        "benign_medyan": 517223.0,
+        "benign_q1": 501745.5,
+        "benign_q3": 597349.75,
+        "botnet_medyan": 509029.0,
+        "botnet_q1": 500028.5,
+        "botnet_q3": 515616.0
+      },
+      {
+        "oznitelik": "Bwd IAT Max",
+        "benign_medyan": 516854.5,
+        "benign_q1": 501759.5,
+        "benign_q3": 596140.25,
+        "botnet_medyan": 508772.0,
+        "botnet_q1": 500018.0,
+        "botnet_q3": 515432.5
+      },
+      {
+        "oznitelik": "Fwd IAT Std",
+        "benign_medyan": 1347.0384521484375,
+        "benign_q1": 482.42359161376953,
+        "benign_q3": 3590.5115356445312,
+        "botnet_medyan": 1635.5379638671875,
+        "botnet_q1": 1242.0330810546875,
+        "botnet_q3": 4814.336669921875
+      },
+      {
+        "oznitelik": "Fwd IAT Mean",
+        "benign_medyan": 515593.25,
+        "benign_q1": 501239.75,
+        "benign_q3": 593178.625,
+        "botnet_medyan": 504346.5,
+        "botnet_q1": 498361.75,
+        "botnet_q3": 514175.25
+      },
+      {
+        "oznitelik": "Bwd IAT Mean",
+        "benign_medyan": 515578.75,
+        "benign_q1": 501149.25,
+        "benign_q3": 593200.125,
+        "botnet_medyan": 504304.5,
+        "botnet_q1": 498430.0,
+        "botnet_q3": 514017.75
+      },
+      {
+        "oznitelik": "Fwd IAT Min",
+        "benign_medyan": 515034.5,
+        "benign_q1": 500054.25,
+        "benign_q3": 591516.25,
+        "botnet_medyan": 500486.0,
+        "botnet_q1": 497451.0,
+        "botnet_q3": 512556.0
+      },
+      {
+        "oznitelik": "Bwd IAT Min",
+        "benign_medyan": 514998.5,
+        "benign_q1": 500208.25,
+        "benign_q3": 591594.5,
+        "botnet_medyan": 500365.0,
+        "botnet_q1": 497464.5,
+        "botnet_q3": 512381.5
+      },
+      {
+        "oznitelik": "Flow IAT Std",
+        "benign_medyan": 269111.53125,
+        "benign_q1": 226206.4296875,
+        "benign_q3": 273894.7734375,
+        "botnet_medyan": 275600.09375,
+        "botnet_q1": 272463.234375,
+        "botnet_q3": 280839.453125
+      },
+      {
+        "oznitelik": "Flow Bytes/s",
+        "benign_medyan": 17.218915939331055,
+        "benign_q1": 14.067384958267212,
+        "benign_q3": 17.945938110351562,
+        "botnet_medyan": 17.834760665893555,
+        "botnet_q1": 17.495686531066895,
+        "botnet_q3": 18.04612636566162
+      },
+      {
+        "oznitelik": "Bwd IAT Std",
+        "benign_medyan": 1462.650390625,
+        "benign_q1": 482.4236068725586,
+        "benign_q3": 3602.8857421875,
+        "botnet_medyan": 1821.507080078125,
+        "botnet_q1": 1210.2132568359375,
+        "botnet_q3": 4865.601806640625
+      },
+      {
+        "oznitelik": "Flow IAT Mean",
+        "benign_medyan": 209072.40625,
+        "benign_q1": 200602.49609375,
+        "benign_q3": 255911.09375,
+        "botnet_medyan": 201853.0,
+        "botnet_q1": 199488.796875,
+        "botnet_q3": 205765.0
+      },
+      {
+        "oznitelik": "Flow IAT Min",
+        "benign_medyan": 7916.0,
+        "benign_q1": 472.0,
+        "benign_q3": 86658.25,
+        "botnet_medyan": 454.0,
+        "botnet_q1": 402.0,
+        "botnet_q3": 512.0
+      },
+      {
+        "oznitelik": "Flow Packets/s",
+        "benign_medyan": 5.739638328552246,
+        "benign_q1": 4.689128398895264,
+        "benign_q3": 5.981979250907898,
+        "botnet_medyan": 5.944920539855957,
+        "botnet_q1": 5.831895589828491,
+        "botnet_q3": 6.015375375747681
+      },
+      {
+        "oznitelik": "Bwd Packets/s",
+        "benign_medyan": 2.869819164276123,
+        "benign_q1": 2.344564199447632,
+        "benign_q3": 2.990989625453949,
+        "botnet_medyan": 2.9724602699279785,
+        "botnet_q1": 2.9159477949142456,
+        "botnet_q3": 3.0076876878738403
+      }
+    ]
+  }
+}

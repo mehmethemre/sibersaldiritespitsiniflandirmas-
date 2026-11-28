@@ -1,0 +1,208 @@
+{
+  "ornekleme_orani": null,
+  "dogrulama_satir": 351833,
+  "alt_egitim_satir": 1407332,
+  "oznitelik_sayisi": 45,
+  "gruplar": {
+    "TP": 218,
+    "FP": 128,
+    "FN": 12,
+    "TN": 297790
+  },
+  "botnet_diger_saldiri": {},
+  "diger_saldiri_botnet": {},
+  "temel_puan": {
+    "macro_f1": 0.9406028782921156,
+    "botnet_f1": 0.7569444444444444
+  },
+  "permutation_tekrar": 5,
+  "permutation_dk": 4.376811863333327,
+  "ilk10_botnet_perm": [
+    "Init_Win_bytes_forward",
+    "Init_Win_bytes_backward",
+    "Flow Packets/s",
+    "URG Flag Count",
+    "Total Length of Bwd Packets",
+    "Packet Length Variance",
+    "Total Length of Fwd Packets",
+    "Average Packet Size",
+    "Max Packet Length",
+    "Fwd Packet Length Max"
+  ],
+  "botnet_olasilik": {
+    "TP": {
+      "n": 218,
+      "medyan": 0.9545767614078087,
+      "q1": 0.81793154454221,
+      "q3": 1.0
+    },
+    "FP": {
+      "n": 128,
+      "medyan": 0.7948412900910187,
+      "q1": 0.6439454910855115,
+      "q3": 0.8727547292306714
+    },
+    "FN": {
+      "n": 12,
+      "medyan": 0.15323394235011556,
+      "q1": 0.11607270371482481,
+      "q3": 0.20668614394325463
+    },
+    "TN": {
+      "n": 297790,
+      "medyan": 0.0,
+      "q1": 0.0,
+      "q3": 0.0
+    }
+  },
+  "en_yakin_komsu": {
+    "TP": {
+      "n": 218,
+      "botnet_orani_ort": 0.6651376146788991,
+      "cogunlugu_botnet": 0.5963302752293578,
+      "en_yakin_botnet": 0.7155963302752294,
+      "en_yakin_uzaklik_medyan": 3.5849718187819235e-05
+    },
+    "FP": {
+      "n": 128,
+      "botnet_orani_ort": 0.34765625,
+      "cogunlugu_botnet": 0.1640625,
+      "en_yakin_botnet": 0.4296875,
+      "en_yakin_uzaklik_medyan": 2.901512198150158e-05
+    },
+    "FN": {
+      "n": 12,
+      "botnet_orani_ort": 0.06666666666666667,
+      "cogunlugu_botnet": 0.08333333333333333,
+      "en_yakin_botnet": 0.08333333333333333,
+      "en_yakin_uzaklik_medyan": 0.0013909428962506354
+    },
+    "TN": {
+      "n": 5000,
+      "botnet_orani_ort": 0.00014000000000000001,
+      "cogunlugu_botnet": 0.0,
+      "en_yakin_botnet": 0.0002,
+      "en_yakin_uzaklik_medyan": 0.00038042652886360884
+    }
+  },
+  "birebir_eslesme": {
+    "FP_altegitimde_botnet": 0.03125,
+    "FN_altegitimde_benign": 0.16666666666666666
+  },
+  "ek_betimleyici": [
+    "Flow Duration",
+    "ACK Flag Count",
+    "PSH Flag Count",
+    "FIN Flag Count"
+  ],
+  "fp_sablonu": {
+    "sablon": {
+      "Init_Win_bytes_forward": 8192.0,
+      "Init_Win_bytes_backward": 0.0,
+      "Total Length of Fwd Packets": 0.0,
+      "Total Length of Bwd Packets": 18.0,
+      "Max Packet Length": 6.0
+    },
+    "gruplar": {
+      "TP": {
+        "n": 218,
+        "eslesen": 79
+      },
+      "FP": {
+        "n": 128,
+        "eslesen": 111
+      },
+      "FN": {
+        "n": 12,
+        "eslesen": 1
+      },
+      "TN": {
+        "n": 297790,
+        "eslesen": 132
+      }
+    },
+    "alt_egitim": {
+      "Benign": {
+        "n": 1191890,
+        "eslesen": 1077
+      },
+      "Botnet": {
+        "n": 900,
+        "eslesen": 315
+      }
+    }
+  },
+  "esik_duyarliligi": [
+    {
+      "esik": 0.3,
+      "TP": 218,
+      "FP": 128,
+      "FN_botnet_kacan": 12
+    },
+    {
+      "esik": 0.5,
+      "TP": 197,
+      "FP": 108,
+      "FN_botnet_kacan": 33
+    },
+    {
+      "esik": 0.7,
+      "TP": 179,
+      "FP": 88,
+      "FN_botnet_kacan": 51
+    }
+  ],
+  "impurity_ikizleri": [
+    {
+      "oznitelik": "Bwd Packet Length Max",
+      "en_ilintili": "Max Packet Length",
+      "abs_r": 0.9457014482842258
+    },
+    {
+      "oznitelik": "Packet Length Variance",
+      "en_ilintili": "Max Packet Length",
+      "abs_r": 0.8945581325493627
+    },
+    {
+      "oznitelik": "Average Packet Size",
+      "en_ilintili": "Max Packet Length",
+      "abs_r": 0.9132613109729791
+    },
+    {
+      "oznitelik": "Total Length of Bwd Packets",
+      "en_ilintili": "act_data_pkt_fwd",
+      "abs_r": 0.7922216728789995
+    },
+    {
+      "oznitelik": "Max Packet Length",
+      "en_ilintili": "Bwd Packet Length Max",
+      "abs_r": 0.9457014482842258
+    },
+    {
+      "oznitelik": "Flow IAT Std",
+      "en_ilintili": "Fwd IAT Max",
+      "abs_r": 0.934648532512518
+    },
+    {
+      "oznitelik": "Fwd IAT Std",
+      "en_ilintili": "Fwd IAT Max",
+      "abs_r": 0.9162280757204468
+    },
+    {
+      "oznitelik": "Total Length of Fwd Packets",
+      "en_ilintili": "act_data_pkt_fwd",
+      "abs_r": 0.6571999569498849
+    },
+    {
+      "oznitelik": "Init_Win_bytes_backward",
+      "en_ilintili": "URG Flag Count",
+      "abs_r": 0.17578224122600977
+    },
+    {
+      "oznitelik": "Fwd IAT Max",
+      "en_ilintili": "Idle Min",
+      "abs_r": 0.9468843651421021
+    }
+  ],
+  "sure_dk": 8.43823684166667
+}

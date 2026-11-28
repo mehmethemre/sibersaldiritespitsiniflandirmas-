@@ -101,6 +101,13 @@ def choose_n(benign_table, size=TARGET_SIZE, max_rate=MAX_FALSE_RATE):
 
 def validation_predictions(args, log):
     """Alt-eğitimde 9. hafta ayarlarıyla eğitir, doğrulama kümesinde tahmin yapar."""
+    M = validation_model(args, log)
+    return M["class_names"], M["y_val"], M["pred"], M["n_sub"]
+
+
+def validation_model(args, log):
+    """validation_predictions'ın ayrıntılı hali: model ve ara matrisler de döner (11. hafta
+    öznitelik önem analizi bunlara ihtiyaç duyar)."""
     raw = load_raw(args.data, args.sample_frac, log, keep_port=True)
     classes = set(raw["Label"].map(config.map_label).dropna())
     cn = [c for c in config.CLASS_ORDER if c in classes]
@@ -114,8 +121,13 @@ def validation_predictions(args, log):
     from sklearn.ensemble import RandomForestClassifier
     X, y, _ = oversample(P["X_fit"], P["y_fit"], log, target=config.SMOTE_TARGET)
     model = RandomForestClassifier(**config.RF_PARAMS).fit(X, y)
-    pred, _ = predict_classes(model, P["X_eval"], cn, config.BOTNET_THRESHOLD)
-    return cn, V["y_val"], np.asarray(pred), len(V["y_sub"])
+    pred, proba = predict_classes(model, P["X_eval"], cn, config.BOTNET_THRESHOLD)
+    return {"class_names": cn, "model": model, "features": P["features"],
+            "X_val_raw": V["X_val"][P["features"]], "X_val": P["X_eval"], "y_val": V["y_val"],
+            "pred": np.asarray(pred), "proba": proba,
+            # modelin gördüğü alt-eğitim satırları (çakışma silme sonrası, SMOTE öncesi, ölçeksiz)
+            "X_fit_raw": P["X_fit_raw"], "X_fit": P["X_fit"], "y_fit": np.asarray(P["y_fit"]),
+            "n_sub": len(V["y_sub"])}
 
 
 def main(argv=None):

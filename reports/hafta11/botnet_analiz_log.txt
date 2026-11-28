@@ -1,0 +1,24 @@
+15:35:32 |   Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv: 225,745 satır
+15:35:34 |   Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv: 286,467 satır
+15:35:35 |   Friday-WorkingHours-Morning.pcap_ISCX.csv: 191,033 satır
+15:35:39 |   Monday-WorkingHours.pcap_ISCX.csv: 529,918 satır
+15:35:40 |   Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv: 288,602 satır
+15:35:41 |   Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv: 170,366 satır
+15:35:43 |   Tuesday-WorkingHours.pcap_ISCX.csv: 445,909 satır
+15:35:48 |   Wednesday-workingHours.pcap_ISCX.csv: 692,703 satır
+15:35:48 | Birleşik ham veri: 2,830,743 satır, 77 öznitelik
+15:36:37 | Kapsam dışı silinen: 47
+15:36:37 | Inf/NaN silinen: 2,867
+15:36:37 | Tekrarlayan silinen: 628,872
+15:36:37 | Sabit sütunlar (8): ['Bwd PSH Flags', 'Bwd URG Flags', 'Fwd Avg Bytes/Bulk', 'Fwd Avg Packets/Bulk', 'Fwd Avg Bulk Rate', 'Bwd Avg Bytes/Bulk', 'Bwd Avg Packets/Bulk', 'Bwd Avg Bulk Rate']
+15:36:37 | Temiz veri: 2,198,957 satır
+15:36:50 | [A) Port yok (mevcut)] eğitim 1,759,165 -> alt-eğitim 1,407,332 / doğrulama 351,833 · test 439,792
+15:37:00 | Korelasyon elemesi: 23 öznitelik elendi, 45 kaldı
+15:37:00 | ExtraTrees seçimi kapalı: korelasyon sonrası tüm öznitelikler kullanılıyor
+15:37:05 | Çakışma modu 'sil': 127 grup, 254 satır çakışıyor, 254 satır silindi
+15:37:09 | SMOTE (imblearn.SMOTE, k=5): 1,407,078 -> 1,437,741 satır
+15:39:19 | Gruplar: {'TP': 218, 'FP': 128, 'FN': 12, 'TN': 297790} · Botnet->diğer saldırı: {} · diğer saldırı->Botnet: {}
+15:43:42 | Permutation (5 tekrar, 351,833 satır): 4.4 dk · temel puan {'macro_f1': 0.9406028782921156, 'botnet_f1': 0.7569444444444444}
+15:43:55 | En yakın komşu: {'TP': {'n': 218, 'botnet_orani_ort': 0.6651376146788991, 'cogunlugu_botnet': 0.5963302752293578, 'en_yakin_botnet': 0.7155963302752294, 'en_yakin_uzaklik_medyan': 3.5849718187819235e-05}, 'FP': {'n': 128, 'botnet_orani_ort': 0.34765625, 'cogunlugu_botnet': 0.1640625, 'en_yakin_botnet': 0.4296875, 'en_yakin_uzaklik_medyan': 2.901512198150158e-05}, 'FN': {'n': 12, 'botnet_orani_ort': 0.06666666666666667, 'cogunlugu_botnet': 0.08333333333333333, 'en_yakin_botnet': 0.08333333333333333, 'en_yakin_uzaklik_medyan': 0.0013909428962506354}, 'TN': {'n': 5000, 'botnet_orani_ort': 0.00014000000000000001, 'cogunlugu_botnet': 0.0, 'en_yakin_botnet': 0.0002, 'en_yakin_uzaklik_medyan': 0.00038042652886360884}} · Birebir eşleşme: {'FP_altegitimde_botnet': 0.03125, 'FN_altegitimde_benign': 0.16666666666666666}
+15:43:55 | FP şablonu: {'sablon': {'Init_Win_bytes_forward': 8192.0, 'Init_Win_bytes_backward': 0.0, 'Total Length of Fwd Packets': 0.0, 'Total Length of Bwd Packets': 18.0, 'Max Packet Length': 6.0}, 'gruplar': {'TP': {'n': 218, 'eslesen': 79}, 'FP': {'n': 128, 'eslesen': 111}, 'FN': {'n': 12, 'eslesen': 1}, 'TN': {'n': 297790, 'eslesen': 132}}, 'alt_egitim': {'Benign': {'n': 1191890, 'eslesen': 1077}, 'Botnet': {'n': 900, 'eslesen': 315}}} · Eşik duyarlılığı: [{'esik': 0.3, 'TP': 218, 'FP': 128, 'FN_botnet_kacan': 12}, {'esik': 0.5, 'TP': 197, 'FP': 108, 'FN_botnet_kacan': 33}, {'esik': 0.7, 'TP': 179, 'FP': 88, 'FN_botnet_kacan': 51}]
+15:43:57 | Bitti: 8.4 dk · Çıktılar: C:\Users\Emre\Desktop\siber-saldiri\siber-saldiri-siniflandirma\reports\hafta11
