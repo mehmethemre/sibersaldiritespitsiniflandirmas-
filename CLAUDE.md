@@ -52,7 +52,7 @@ Sayı uydurma, tahmini değeri ölçülmüş gibi sunma. Sonuç yoksa "[doldurul
 | 8 | Çapraz doğrulamalı hiperparametre arama (SMOTE imblearn Pipeline içinde, gerekirse örneklemle) + XGBoost/LightGBM karşılaştırması |
 | 9 | `src/inference.py` + Streamlit `app.py` (CSV yükle, tahmin + güven skoru, dağılım grafiği, kritik saldırıda st.error) + `logging` ile `security.log` (RotatingFileHandler, CRITICAL; alarmları dosya bazında özetle) + SQLite geçmiş + demo dosyaları — **tamamlandı** |
 | 10 | Test: N2 (<50 ms tek kayıt, 10.000 satır <5 sn), N3 (RAM <1,5 GB), N4 (bozuk/eksik sütunlu CSV'de çökmeme), oran tabanlı alarm eşiği, uçtan uca testler — **tamamlandı** (`reports/hafta10_sonuclar.md`) |
-| 11 | Öznitelik önem analizi, arayüz iyileştirme, README; isteğe bağlı VirtualBox laboratuvarında nmap + CICFlowMeter canlı demo denemesi |
+| 11 | Öznitelik önem analizi, arayüz iyileştirme, README; canlı demo yalnızca plan (`docs/canli_demo_plani.md`) — **tamamlandı** (`reports/hafta11_sonuclar.md`) |
 | 12 | Dönem sonu teknik raporu |
 | 13 | Final sunumu ve canlı demo |
 
@@ -102,8 +102,27 @@ Ayrıntı: `reports/hafta11/botnet_secim_olcutu.md` (deney: `experiments/botnet_
   yöntemiyle yeniden; N2/N3 yeniden ölçülür; uygulama ve testler güncellenir; testte yalnızca
   seçilen ayar bir kez ölçülür (testin **ikinci** kullanımı, 9. hafta test sonuçları yanında kalır).
 
-## Güncel durum (26.11.2026)
-- 10. hafta tamamlandı ve GitHub'a push edildi (`303dd00`). Sıradaki iş: 11. hafta (yol haritası).
+## 11. hafta özeti (28.11.2026; ayrıntı ve tüm sayılar: `reports/hafta11_sonuclar.md`)
+- Analizler doğrulama kümesinde, alt-eğitim modeliyle; **test kümesi bu hafta kullanılmadı**.
+- Botnet–Benign (doğrulama): TP 218, FP 128, FN 12. Botnet başka saldırıyla hiç karışmadı.
+  Permutation (Botnet F1) ilk sıralar: Init_Win_bytes_forward/backward, Flow Packets/s, URG Flag
+  Count. Impurity sırası farklı (eğitim + SMOTE verisinden, ilişkili ikizler önemi paylaşıyor).
+- FP'lerin %86,7'si (111/128) tek bir kısa akış şablonu. Şablon alt-eğitimde iki sınıfta da var
+  (1.077 Benign, 315 Botnet). Satırlar birebir aynı değil; yalnızca örtüşen zamanlama sütunlarında
+  ayrışıyor. FP medyan Botnet olasılığı 0,795. Akış düzeyinde ayırt edici bilgi yok gibi.
+- Botnet SMOTE denemesi (ölçüt `f7c5d54`, deneyden önce commit): en iyi (5.000; 0,30) F1
+  %75,92 ± 0,40, R %75,72 ± 0,18, Δ 0,20 puan < 1 puan → **benimsenmedi**, mevcut ayar kaldı.
+- `oversample`'a `class_targets` ve `random_state` eklendi; varsayılanlarla eski davranış birebir aynı (test var).
+- Arayüz: Model Hakkında sayfası, eşik açıklaması, alarm özeti CSV, boş durum rehberi, Türkçe tarih
+  (saat dilimi doğrulandı, DB değişmedi), satıra normalize ısı haritası, N_min Gelişmiş ayarlar'da.
+- README yeniden yazıldı; 10 ekran görüntüsü `docs/img/`. Görüntü analizleri (#18–#22) yedekten
+  geri dönülerek silindi (`data/yedek_hafta11/`, gitignore'da).
+- Testler: 80 → 97 (33,48–33,74 sn).
+- Kalan: Botnet test F1 %74,22 (N1 kritik F1 ≥ %90 karşılanmıyor); PortScan 100.000 satırda
+  yanlış UYARI %13,6; büyük dosyada eşik biçimi (Poisson adayı); canlı demo denenmedi.
+
+## Güncel durum (28.11.2026)
+- 11. hafta tamamlandı ve GitHub'a push edildi. Sıradaki iş: 12. hafta (dönem sonu teknik raporu).
 - Arayüz ölçüm analizleri (#14–#17, perf_*.csv) veritabanından ve `logs/security.log`'dan silindi;
   silmeden önceki yedek `data/yedek_hafta10/` (gitignore'da). Geçmişte yalnızca demo analizleri var.
 - Geliştirme araçları kuruldu: superpowers, ponytail (bu projede kapalı; 10. hafta oturumunda kullanıcı komutuyla geçici olarak lite modda açıktı), andrej-karpathy-skills, find-skills, graphify, caveman, claude-mem.
